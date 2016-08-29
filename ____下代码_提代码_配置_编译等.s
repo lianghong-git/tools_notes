@@ -181,6 +181,10 @@ adb shell libcammw_gtest -p -t 4100                         //
 adb pull /data/misc/camera/ .
 adb pull /data/misc/camera/ /home/CORPUSERS/xp019530/Downloads/Log/0714/test2/
 
+//拷贝整个文件夹失败时，用此方法：
+adb pull "/storage/emulated/legacy/DCIM/Camera/" /home/shi/下载/ov5640_captures/
+
+
 //Get kernel log
 1. clear log.
 2. adb pull sdcard/logalong/ /home/CORPUSERS/xp019530/Downloads/
