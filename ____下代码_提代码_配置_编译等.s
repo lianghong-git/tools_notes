@@ -1,3 +1,9 @@
+//OV5640 On Tiny4412
+http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
+
+
+
+
 
 //SONY环境配置教程
 https://wiki.sonyericsson.net/androiki/Setup_Your_Develop_Environment
