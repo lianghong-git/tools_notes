@@ -31,7 +31,59 @@ scp  -r local_dir username@servername:remote_dir
 
 注：目标服务器要开启写入权限。
 ---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
+ modprobe(module probe)
+功能说明：自动处理可载入模块。
 
+语　　法：modprobe [-acdlrtvV][--help][模块文件][符号名称 = 符号值]
+
+补充说明：modprobe可载入指定的个别模块，或是载入一组相依的模块。modprobe会根据depmod所产生的相依关系，决定要载入哪些模块。若在载入过程中发生错误，在modprobe会卸载整组的模块。
+
+ 
+insmod 与 modprobe 都是载入 kernel module，不过一般差别于 modprobe 能够处理 module 载入的相依问题。
+　　比方你要载入 a module，但是 a module 要求系统先载入 b module 时，直接用 insmod 挂入通常都会出现错误讯息，不过 modprobe 倒是能够知道先载入 b module 后才载入 a module，如此相依性就会满足。
+　　不过 modprobe 并不是大神，不会厉害到知道 module 之间的相依性为何，该程式是读取 /lib/modules/2.6.xx/modules.dep 档案得知相依性的。而该档案是透过 depmod 程式所建立。
+补充说明：modprobe可载入指定的个别模块，或是载入一组相依的模块。modprobe会根据depmod所产生的相依关系，决定要载入哪些模块。若在载入过程中发生错误，在modprobe会卸载整组的模块。
+
+[举例]
+*查看modules的配置文件：
+$modprobe -c
+这里，可以查看modules 的配置文件，比如模块的别名是什么等。会打印许多行信息，例如其中的一行会类似如下：
+alias symbol:ieee80211_remove_wds_addr wlan
+
+*列出内核中所有已经或者未挂载的所有模块：
+$modprobe -l
+这里，我们能查看到我们所需要的模块，然后根据我们的需要来挂载；其实modprobe -l 读取的模块列表就位于 /lib/modules/'uname -r' 目录中；其中uname -r 是内核的版本.例如输出结果的其中一行是：
+/lib/modules/2.6.27-7-generic/kernel/arch/x86/oprofile/oprofile.ko
+
+*挂载vfat模块：
+#modprobe vfat
+这里，使用格式"modprobe 模块名"来挂载一个模块。挂载之后，用lsmod可以查看已经挂载的模块。模块名是不能带有后缀的，我们通过modprobe -l 所看到的模块，都是带有.ko 或.o后缀。
+
+*移除已经加载的模块：
+#modprobe -r  模块名
+这里，移除已加载的模块，和rmmod 功能相同。注意：模块名是不能带有后缀的，我们通过modprobe -l 所看到的模块，都是带有.ko 或.o后缀. 
+
+与内核模块操作相关的命令还有:lsmod     modinfo   depmod    rmmod    inmod    modprobe   
+
+ 
+
+    modprobe 命令是根据depmod -a的输出/lib/modules/version/modules.dep来加载全部的所需要模块。　　
+    删除模块的命令是：modprobe -r filename　　
+    系统启动后，正常工作的模块都在/proc/modules文件中列出。使用lsmod命令也可显示相同内容。　　
+    在内核中有一个“Automatic kernel module loading"功能被编译到了内核中。当用户尝试打开某类型的文件时，内核会根据需要尝试加载相应的模块。/etc/modules.conf或 /etc/modprobe.conf文件是一个自动处理内核模块的控制文件。
+
+    参　　数：
+      -a或--all 　载入全部的模块。 
+      -c或--show-conf 　显示所有模块的设置信息。 
+      -d或--debug 　使用排错模式。 
+      -l或--list 　显示可用的模块。 
+      -r或--remove 　模块闲置不用时，即自动卸载模块。 
+      -t或--type 　指定模块类型。 
+      -v或--verbose 　执行时显示详细的信息。 
+      -V或--version 　显示版本信息。 
+      -help 　显示帮助。 
+---------------------------------------------------------------------------------------
 //SONY环境配置教程
 https://wiki.sonyericsson.net/androiki/Setup_Your_Develop_Environment
 
