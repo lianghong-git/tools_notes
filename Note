@@ -281,6 +281,52 @@ adb shell cat /proc/kmsg
 adb logcat -v time
 
 
+-------------------------------------------------------------------------------------------------------
+ffmpeg
+-------------------------------------------------------------------------------------------------------
+ffmpeg简介
+1. 生成yuv文件，yuv文件由Y,Cb,Cr三大部分组成,且每部分分块存储（例如，一帧320x240的视频存为yuv文件为 Y---240*320，Cb,Cr分别为240*160,240*160。
+2. 使用ffmpeg工具转换：
+转换为jpg格式：ffmpeg -y -s 320x240 -i D:\yuv2jpg\capture0.yuv -b 20000000 xxd.jpg
+转换为bmp格式：ffmpeg -y -s 320x240 -i D:\yuv2jpg\capture0.yuv -b 20000000 xxd.bmp
+
+附：FFmpeg简介
+
+FFmpeg是什么？
+FFmpeg是用于录制、转换和流化音频和视频的完整解决方案， 包括 libavcodec ，一套领先的音/视频编解码类库。FFmpeg 在Linux上开发，当可以在大多数操作系统下编译，包括Windows。
+Note:
+FFmpeg对GCC的依赖很强，所以就算是在Windows上， 用VC编译FFmpeg也不是一件轻松的事情。请尽量使用 GCC来编译FFmpeg，比较事半功倍。
+
+FFmpeg的官方网址是 http://ffmpeg.mplayerhq.hu/。
+中文Wiki是 http://www.ffmpeg.com.cn/ ，资料很多。
+
+FFmpeg的组成结构:
+FFmpeg主要由一下几个部分组成：
+libavcodec： 一个包含了所有FFmpeg音视频编解码器的库。 为了保证最优性能和高可复用性,大多数编解码器从头开发的。
+libavformat： 一个包含了所有的普通音视格式的解析器和 产生器的库。
+
+三个实例程序，这三个实例较为复杂，基本可以作为API使用手册：
+ffmpeg：命令行的视频格式转换程序。
+ffplay：视频播放程序。（需要SDL支持）
+ffserver：多媒体服务器
+
+了解完组成结构后，你会发现，如果你在寻找一种视频格式转换的方式，那FFmpeg绝对是你的第一选择， libavcodec则又是重中之重。
+如果遇上API不会使用的情况，可以参考ffmpeg.c、ffplay.c、 ffserver.c、apiexample.c（解码）和output_example.c（编码）。
+
+FFmpeg的编译:
+要使用FFmpeg，第一步就是编译，对于Linux上的用户，可以参考http://www.ffmpeg.com.cn/index.php/Ffmpeg%E7%BC%96%E8%AF%91%E8%AF%A6%E8%A7%A3
+对于Windows用户，可以参考 http://bbs.chinavideo.org/viewthread.php?tid=1897&extra=page%3D1
+
+Note:
+编译FFmpeg是一个复杂的过程，如果你想加快速度，领略FFmpeg 的风采，则可以跳过这一步，直接进入下一章节。
+
+FFmpeg的SDK:
+FFmpeg是一个复杂的工程，第一步编译，特别是Windows下的编译 过程，更是复杂。 因此，好心的网友提供了Windows下编译好的 dll和lib库文件，以及相关的头文件。新手们则可直接下载，并开始编写 FFmpeg库的程序了。
+SDK下载和编译参数可以参考 http://www.ffmpeg.com.cn/index.php/SDK_Download 。
+SDK入门宝典可以从 http://www.bairuitech.com/html/ruanjianxiazai/20070713/49.html 下载。
+以上两者已经足以完成FFmpeg的入门，最新的SDK版本是3.0， 对应于FFmpeg的版本是 r10087。
+新手们可以从编译源代码库中的 output_example.c开始，同时参考 SDK入门宝典 。
+
 
 //ffmpeg: YUV ---> JPG
 //转单个文件：
