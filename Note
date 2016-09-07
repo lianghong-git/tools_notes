@@ -1,6 +1,23 @@
 //OV5640 On Tiny4412
 http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
+==========================================================================================================
+如何使用git工具向github提交代码:
 
+1.首先需要克隆线上的库:   git clone https://github.com/shiguanghu/mini2440_assembler_c_programs.git
+2.进入克隆好的目录,开始肆无忌惮的创建
+3.开始提交: 
+	//首先先链接下远程的git库
+	git remote add origin git@github.com:hevily/hevily
+ 
+	//开始把本地的文件全部添加下
+	git add .
+
+	//提交
+	git commit -m "这里是我写的提交注释"
+ 
+	//提交到远程
+	git push -u origin master
+==========================================================================================================
 //递归删除
 find . -name "*.o"  | xargs rm -f
 ---------------------------------------------------------------------------------------
