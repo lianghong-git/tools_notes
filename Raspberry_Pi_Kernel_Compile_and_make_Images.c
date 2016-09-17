@@ -2,9 +2,18 @@
 //RaspberryPi Kernel Compile On fedora
 // shiguanghu
 ////////////////////////////////////////
+//
 yum -y install gcc-arm-linux-gnu
 arm-linux-gnu-gcc --version
 
+//
+make ARCH=arm CROSS_COMPILE=/usr/bin/arm-linux-gnu- bcmrpi_cutdown_defconfig
+or
+make ARCH=arm CROSS_COMPILE=/usr/bin/arm-linux-gnu- bcm2835_defconfig
+make ARCH=arm CROSS_COMPILE=/usr/bin/arm-linux-gnu- bcmrpi_defconfig //OK!
+
+//
+make ARCH=arm CROSS_COMPILE=/usr/bin/arm-linux-gnu-
 
 
 ///////////////////////////////////////
