@@ -1,6 +1,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-//gitから任意のバージョンのLinuxカーネルのソースコードをチェックアウトする
+//方法1：gitから任意のバージョンのLinuxカーネルのソースコードをチェックアウトする
 //////////////////////////////////////////////////////////////////////////////////////////////
 何はともあれgit clone。
 
@@ -23,3 +23,24 @@ $ git checkout -b v3.10 v3.10
 ソースコードリーディングのお供としてctagsをと思ったけど、CentOSのvimだとcscopeがデフォルトっぽいので、cscopeのタグファイルを作っておく。
 
 $ make cscope ARCH=x86
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//方法2
+//////////////////////////////////////////////////////////////////////////////
+The easiest and most bandwidth-friendly way, if you expect to do this more than once, would be to clone the kernel's git repository and check out the version you want based on its tag. It's probably best to clone the linux-stable repo, since that will include tags for all of the stable releases:
+
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+cd linux
+git checkout v2.6.36.2
+
+To later switch to another version, it's easy:
+
+git checkout v3.5.2
+
+To update your repository to include all of the latest tags and commits:
+
+git fetch
+
