@@ -1,17 +1,20 @@
 rename 的典型应用:
 
 0. 批量更改文件扩展名
-$ ls
-1.txt 2.txt 3.txt 4.txt
-$ rename 's//.txt//.ext/' *
-$ ls
-1.ext 2.ext 3.ext 4.ext
+//.cc -> .c
+$ rename 's/\.cc/\.c/' *
+
+
+
 1. 批量删除文件扩展名
 $ ls
 1.txt 2.txt 3.txt 4.txt
 $ rename 's//.txt//' *
 $ ls
 1 2 3 4
+
+
+
 2. 批量添加文件扩展名
    $ ls
 1 2 3 4
