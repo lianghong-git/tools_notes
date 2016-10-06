@@ -1,0 +1,37 @@
+rename 的典型应用:
+
+0. 批量更改文件扩展名
+$ ls
+1.txt 2.txt 3.txt 4.txt
+$ rename 's//.txt//.ext/' *
+$ ls
+1.ext 2.ext 3.ext 4.ext
+1. 批量删除文件扩展名
+$ ls
+1.txt 2.txt 3.txt 4.txt
+$ rename 's//.txt//' *
+$ ls
+1 2 3 4
+2. 批量添加文件扩展名
+   $ ls
+1 2 3 4
+$ rename 's/$//.txt/' *
+$ ls
+1.txt 2.txt 3.txt 4.txt
+3. 按自己的方式批量重命名文件
+$ ls
+1.ext 2.ext 3.ext 4.ext
+$ rename 's/(/d)/第$1 章/' *
+$ ls
+第 1 章.ext 第 2 章.ext 第 3 章.ext 第 4 章.ext
+
+3.
+
+方法1：把文件名拆分处理，可以任意修改文件名
+find -name '*.log' -printf %f//n|awk -F'.' '{print $1}'|xargs -i{} mv {}.log xiyun_{}.log
+方法2：利用rename
+一般的linux下的rename命令比较简单
+rename 'test' 'xiyun' '*.log'
+把文件名中的某部分字符串替换掉
+ubuntu下的rename命令支持正则表达式，因此功能更强大。
+方法3：直接利用find和xargs和mv，中间不用awk，这样只能添加后缀名，不能修改文件名。
