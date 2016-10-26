@@ -1,3 +1,15 @@
+问题场景：
+新建Git项目或刚为已存在项目创建了git仓库，想用git branch dev创建dev分支或用git checkout -b dev创建并切换到dev分支时报错。
+
+原因：
+刚创建的git仓库默认的master分支要在第一次commit之后才会真正建立，否则就像你声明了个对象但没初始化一样
+
+解决办法：
+先git add .添加所有项目文件到本地仓库缓存，
+再git commit -m "init commit"提交到本地仓库，之后就可以随心所欲地创建或切换分支了。（这里给出的是可以直接操作成功的，add和commit可自写）。
+
+
+
 
 Git常用操作命令：
 
