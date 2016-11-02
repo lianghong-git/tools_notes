@@ -5,22 +5,21 @@ Android Repo的manifest XML文件格式
 
 Android使用repo来管理多个Git项目。它需要一个manifest  XML文件来指示这些git项目的属性。
 
-repo manifest XML可以包含下面的元素。
+repo manifest XML可以包含下面的元素:
+
+
 manifest: 最顶层的XML元素。
-remote元素: 设置远程git服务器的属性，包括下面的属性
-name: 远程git服务器的名字，直接用于git fetch, git remote 等操作
-alias: 远程git服务器的别名，如果指定了，则会覆盖name的设定。在一个manifest中，
-name不能重名，但alias可以重名。
-fetch: 所有projects的git URL 前缀
-review: 指定Gerrit的服务器名，用于repo upload操作。如果没有指定，则repo upload没有效果。
 
+remote元素: 设置远程git服务器的属性，包括下面的属性:
+        name: 远程git服务器的名字，直接用于git fetch, git remote 等操作
+        alias: 远程git服务器的别名，如果指定了，则会覆盖name的设定。在一个manifest中，
+        name不能重名，但alias可以重名。
+        fetch: 所有projects的git URL 前缀
+        review: 指定Gerrit的服务器名，用于repo upload操作。如果没有指定，则repo upload没有效果。
 
+        Example:
+                    <remote fetch="ssh://git.example.com" name="test" review="gerrit.example.com"/>
 
-
-
-Example:
-
-<remote fetch="ssh://git.example.com" name="test"review="gerrit.example.com"/>
 default元素：设定所有projects的默认属性值，如果在project元素里没有指定一个属性，则使用default元素的属性值。
 remote: 之前定义的某一个remote元素中name属性值，用于指定使用哪一个远程git服务器。
 revision: git分支的名字，例如master或者refs/heads/master
@@ -28,11 +27,10 @@ sync_j: 在repo sync中默认并行的数目。
 sync_c: 如果设置为true，则只同步指定的分支(revision 属性指定)，而不是所有的ref内容。
 sync_s: 如果设置为true，则会同步git的子项目
 
-
-
 Example:
+    <default remote="main" revision="platform/main"/>
 
-<default remote="main" revision="platform/main"/>
+
 manifest-server元素: 只能有一个该元素。它的url属性用于指定manifest服务的URL，通常是一个XML RPC 服务。
 它要支持一下RPC方法：
 GetApprovedManifest(branch, target): 返回一个manifest用于指示所有projects的分支和编译目标。
