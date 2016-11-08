@@ -1,0 +1,37 @@
+Android 不同版本推荐的JDK可能不一样，这样导致了在多个不同Android版本下工作会需要不同版本的jdk
+Android L以及最新的Google推荐的是openjdk-7-jdk，并且限制只能使用jdk7以上的版本，但是在4.4以及以下版本中，jdk7编译失败，很多项目编译失败，除了修复编译失败的问题之外我们还可以再安装一个jdk6。
+首先我们下载sun-jdk-6出来，安装略,我把文件释放到/opt/jdk目录了
+配置如下：
+$ sudo vim /etc/profile
+在文件的末尾加上如下内容，保存并关闭文件
+
+# for java
+export JAVA_HOME=/opt/jdk
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=$PATH:${JAVA_HOME}/bin:${JRE_HOME}/bin
+
+$ source /etc/profile
+*如果你没有多版本的jdk，最后一行可以这样写，那么会直接使用/opt/jdk，不需要切换
+PATH=${JAVA_HOME}/bin:${JRE_HOME}/bin:$PATH
+
+*如果你有多个jdk的话，可以一行可以这样写，那么会使用/usr/bin/java – > /etc/alternatives/java
+export PATH=$PATH:${JAVA_HOME}/bin:${JRE_HOME}/bin
+然后执行下面的
+$ sudo update-alternatives –install /usr/bin/javah javah /opt/jdk/bin/javah 255
+$ sudo update-alternatives –install /usr/bin/javac javac /opt/jdk/bin/javac 255
+$ sudo update-alternatives –install /usr/bin/java java /opt/jdk/bin/java 255
+$ sudo update-alternatives –install /usr/bin/jar jar /opt/jdk/bin/jar 255
+
+安装完了sun jdk之后，我们来安装 openjdk （安装环境Ubuntu 14.04）
+$ sudo apt-get install openjdk-7-jdk
+
+///////////////////////////////////////////////////
+安装完毕之后,执行以下命令来切换你的jdk
+///////////////////////////////////////////////////
+$ sudo update-alternatives –config java
+$ sudo update-alternatives –config javac
+$ sudo update-alternatives –config javah
+$ sudo update-alternatives –config jar
+
+当然了你可以自己在android 不同版本编译的时候单独在build里面设置切换不同的jdk，此处就不多说了。
