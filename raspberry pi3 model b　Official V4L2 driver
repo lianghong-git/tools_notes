@@ -1,0 +1,77 @@
+/////////////////////////////////////////////////
+//raspberry pi3 model b
+/////////////////////////////////////////////////
+Official V4L2 driver
+
+
+
+the default kernel includes v4l2 driver and the latest raspbian image includes the v4l2 utilities (like v4l2-ctl) 
+so the initial steps can be skipped. 
+
+Skip forward to the modprobe line.
+
+
+rpi-update to get it. Consider this beta for now.
+
+Some info is here (in linux tree):
+https://github.com/raspberrypi/linux/bl ... 5-v4l2.txt
+
+You need a version 1.0 or later of v4l2-ctl, available from:
+git://git.linuxtv.org/v4l-utils.git
+
+i.e
+
+Code: Select all
+    sudo apt-get install autoconf gettext libtool libjpeg62-dev
+    cd v4l-utils
+    autoreconf -vfi
+    ./configure
+    make
+    sudo make install
+
+
+This takes about fifteen minutes.
+
+
+
+
+You need to have camera enabled and sufficient gpu_mem configured (much like raspicam).
+Some commands to get started:
+
+//////////////////////////////////////////////////////////////
+まずはV４L２ドライバをINSMODする
+//////////////////////////////////////////////////////////////
+# load the module
+sudo modprobe bcm2835-v4l2
+
+//////////////////////////////////////////////////////////////
+私のV４L２　Appを実効する
+//////////////////////////////////////////////////////////////
+
+# viewfinder
+v4l2-ctl --overlay=1 # enable viewfinder
+v4l2-ctl --overlay=0 # disable viewfinder
+
+# record video
+v4l2-ctl --set-fmt-video=width=1920,height=1088,pixelformat=4
+v4l2-ctl --stream-mmap=3 --stream-count=100 --stream-to=somefile.264
+
+# capture jpeg
+v4l2-ctl --set-fmt-video=width=2592,height=1944,pixelformat=3
+v4l2-ctl --stream-mmap=3 --stream-count=1 --stream-to=somefile.jpg
+
+# set bitrate
+v4l2-ctl --set-ctrl video_bitrate=10000000
+
+# list supported formats
+v4l2-ctl --list-formats
+
+In theory (some) apps that use V4L should work. Report back what does work and what doesn't.
+Thanks to Vincent Sanders at Collabora, and Luke Diamand and David Stevenson at Broadcom for working on this.
+
+    Raspberry Pi Engineer & Forum Moderator
+    Raspberry Pi Engineer & Forum Moderator
+    Posts: 4915
+    Joined: Wed Aug 17, 2011 7:41 pm
+    Location: Cambridge
+
