@@ -2,51 +2,43 @@
 //raspberry pi3 model b
 /////////////////////////////////////////////////
 Official V4L2 driver
-
-
-
-the default kernel includes v4l2 driver and the latest raspbian image includes the v4l2 utilities (like v4l2-ctl) 
-so the initial steps can be skipped. 
-
-Skip forward to the modprobe line.
-
-
-rpi-update to get it. Consider this beta for now.
-
-Some info is here (in linux tree):
-https://github.com/raspberrypi/linux/bl ... 5-v4l2.txt
-
-You need a version 1.0 or later of v4l2-ctl, available from:
-git://git.linuxtv.org/v4l-utils.git
-
-i.e
-
-Code: Select all
-    sudo apt-get install autoconf gettext libtool libjpeg62-dev
-    cd v4l-utils
-    autoreconf -vfi
-    ./configure
-    make
-    sudo make install
-
-
-This takes about fifteen minutes.
-
-
-
-
-You need to have camera enabled and sufficient gpu_mem configured (much like raspicam).
-Some commands to get started:
-
 //////////////////////////////////////////////////////////////
 まずはV４L２ドライバをINSMODする
 //////////////////////////////////////////////////////////////
 # load the module
 sudo modprobe bcm2835-v4l2
 
+//v4l2 drivers File: 
+/home/sgh/Documents/Raspberry/kernel/linux/drivers/media/platform/bcm2835/　の
+bcm2835-camera.c controls.c mmal-vchiq.c　である。　Makefileを見れば分かる。
+
+で、ドライバを書き換えたい場合は、　bcm2835-v4l2.ko　を書き換えればOK。
+Dirは、　uname -a でBoardのKernelのVersionを確認いて、ドライバを書き換えればOK。
+例えば、今現在は
+/lib/modules/4.4.13-v7+/kernel/drivers/media/platform/bcm2835/bcm2835-v4l2.ko
+である。
+
 //////////////////////////////////////////////////////////////
 私のV４L２　Appを実効する
 //////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # viewfinder
 v4l2-ctl --overlay=1 # enable viewfinder
