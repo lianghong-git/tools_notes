@@ -1,3 +1,108 @@
+////////////////////////////////////////////
+Cross-compiling
+////////////////////////////////////////////
+
+First, you will need a suitable Linux cross-compilation host. We tend to use Ubuntu; since Raspbian is also a Debian distribution, it means many aspects are similar, such as the command lines.
+
+You can either do this using VirtualBox (or VMWare) on Windows, or install it directly onto your computer. For reference, you can follow instructions online at Wikihow.
+Install toolchain
+
+Use the following command to install the toolchain:
+
+git clone https://github.com/raspberrypi/tools
+
+You can then copy the /tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian directory to a common location, and add /tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin to your $PATH in the .bashrc in your home directory. For 64-bit host systems, use /tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin. While this step isn't strictly necessary, it does make it easier for later command lines!
+Get sources
+
+To get the sources, refer to the original GitHub repository for the various branches.
+
+$ git clone --depth=1 https://github.com/raspberrypi/linux
+
+Build sources
+
+To build the sources for cross-compilation, there may be extra dependencies beyond those you've installed by default with Ubuntu. If you find you need other things, please submit a pull request to change the documentation.
+
+Enter the following commands to build the sources and Device Tree files:
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+For Pi 1 or Compute Module:
+///////////////////////////////////////
+cd linux
+KERNEL=kernel
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcmrpi_defconfig
+
+\\\\\\\\\\\\\\\\\\\\\\\\
+For Pi 2/3:
+////////////////////////
+cd linux
+KERNEL=kernel7
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
+
+Then, for both:
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- zImage modules dtbs
+
+Note: To speed up compilation on multiprocessor systems, and get some improvement on single processor ones, use -j n, where n is the number of processors * 1.5. Alternatively, feel free to experiment and see what works!
+Install directly onto the SD card
+
+Having built the kernel, you need to copy it onto your Raspberry Pi and install the modules; this is best done directly using an SD card reader.
+
+First, use lsblk before and after plugging in your SD card to identify it. You should end up with something like this:
+
+sdb
+   sdb1
+   sdb2
+
+with sdb1 being the FAT (boot) partition, and sdb2 being the ext4 filesystem (root) partition.
+
+If it's a NOOBS card, you should see something like this:
+
+sdb
+  sdb1
+  sdb2
+  sdb5
+  sdb6
+  sdb7
+
+with sdb6 being the FAT (boot) partition, and sdb7 being the ext4 filesystem (root) partition.
+
+Mount these first, adjusting the partition numbers for NOOBS cards:
+
+mkdir mnt/fat32
+mkdir mnt/ext4
+sudo mount /dev/sdb1 mnt/fat32
+sudo mount /dev/sdb2 mnt/ext4
+
+Next, install the modules:
+
+sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_PATH=mnt/ext4 modules_install
+
+Finally, copy the kernel and Device Tree blobs onto the SD card, making sure to back up your old kernel:
+
+sudo cp mnt/fat32/$KERNEL.img mnt/fat32/$KERNEL-backup.img
+sudo scripts/mkknlimg arch/arm/boot/zImage mnt/fat32/$KERNEL.img
+sudo cp arch/arm/boot/dts/*.dtb mnt/fat32/
+sudo cp arch/arm/boot/dts/overlays/*.dtb* mnt/fat32/overlays/
+sudo cp arch/arm/boot/dts/overlays/README mnt/fat32/overlays/
+sudo umount mnt/fat32
+sudo umount mnt/ext4
+
+Another option is to copy the kernel into the same place, but with a different filename - for instance, kernel-myconfig.img - rather than overwriting the kernel.img file. You can then edit the config.txt file to select the kernel that the Pi will boot into:
+
+kernel=kernel-myconfig.img
+
+This has the advantage of keeping your kernel separate from the kernel image managed by the system and any automatic update tools, and allowing you to easily revert to a stock kernel in the event that your kernel cannot boot.
+
+Finally, plug the card into the Pi and boot it!
+
+
+
+
+
+
+
+
+
 /////////////////////////////////////////
 //RaspberryPi Kernel Compile On fedora
 // shiguanghu
