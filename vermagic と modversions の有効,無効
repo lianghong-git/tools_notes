@@ -11,3 +11,10 @@ modprobe に次のオプションを指定するとこれらのチェックを�
 ※ insmod の -f がどちらを無効化するのか確認できていません。。。。
 
 余談ですが、Rusty Russel と Linus のこんなやりとりも発見。http://www.gossamer-threads.com/lists/linux/kernel/918204
+
+
+
+
+/////////////
+modinfo module-file
+strings some_module.ko | grep vermagic
