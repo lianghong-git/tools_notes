@@ -1,0 +1,13 @@
+vermagic と modversions の有効／無効
+
+RHEL5/6 を含む多くのディストリビューションのカーネルでは、CONFIG_MODVERSIONS が有効化されています。これらでは、ロードするモジュールに含まれるシンボルがチェックサムを持っている場合は、vermagic は無視されて、modverions によるチェックのみが行われます。ただし、モジュールにチェックサムが含まれていない場合は、vermagic による確認が行われます。
+
+modprobe に次のオプションを指定するとこれらのチェックを無効化します。
+
+・--force-modversion　→　modversions によるチェックを無効化
+・--force-vermagic　→　vermagic によるチェックを無効化
+・-f　→　両方を無効化
+
+※ insmod の -f がどちらを無効化するのか確認できていません。。。。
+
+余談ですが、Rusty Russel と Linus のこんなやりとりも発見。http://www.gossamer-threads.com/lists/linux/kernel/918204
