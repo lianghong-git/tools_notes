@@ -1,3 +1,8 @@
+//shell
+read X < /dev/imx117
+echo $X
+
+
 //ubuntu中文输入不正确问题：
 ibus-daemon -drx
 
