@@ -56,3 +56,77 @@ Windows下进行代码的阅读和编写，Linux 下编译运行。
 说是自带，其实需要安装vmware-tools，具体怎么安装请自行百度；
  
 共享目录在linux端是/mnt/hgfs；在win中需要在vmware的系统里setting-》option-》shared folders里设置
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+首先要解决windows和Linux网络连接问题。
+注：你的LINUX里面可能有多块块网卡，我电脑只有1块，所以为eth0，设置eth的IP地址，使其与WINDOWS本地连接IP地址在一个网段的（以后就使用这个IP地址登录samba，也是挂载NFS服务器的IP）。
+配置后的网络情况：
+windows本地连接的IP地址是静态的：
+IP为：192.168.0.6 
+子网掩码 ：255.255.255.0
+网关地址：192.168.0.1
+其他不用设置，毕竟只是搭建网络环境。
+ 
+Ubuntu的网络本地连接的IP地址是静态的：
+eth0的IP为：192.168.0.4
+子网掩码 ：255.255.255.0
+网关地址：192.168.0.1
+用上，其他不用设置。
+ 
+其次、关闭LINUX防火墙命令： #sudo ufw disable
+注：ufw是linux下的防火墙操作命令，相关的操作可以查看命令帮助
+然后就在windows下ping一下linux的IP，如果能ping通，就可以继续下面的内容，如果ping不通就再找找原因。
+ 
+注：ubuntu 12.04已经安装了最新版本的samba服务器，无需安装。如果使用12.04以前的版本，最好是按下边的方法升级一下samba，12.04版本无需下列操作
+卸载samba,smbclient,samba-common
+sudo apt-get remove smbclient
+$sudo apt-get remove samba
+安装Ubuntu samba服务器:
+sudo apt-get install samba
+sudo apt-get install smbfs
+ 
+开始配置samba服务器：
+samba配置文件： /etc/samba/smb.conf，配置方法和RedHat9中一样：选择要共享的目录 设置读写权限 设置访问权限 添加samba用户
+具体配置方法：
+第一步：修改samba配置文件
+#sudo vim /etc/samba/smb.conf
+在文件的最后仿照前面的添加一些配置信息，具体如下：
+[work]
+
+comment = smb
+
+path = /work
+
+public = yes
+
+readonly = no
+
+加上之后保存smb.conf文件。其中，“[work]”为共享目录名，共享资源发布以后，存放共享资源的目录成为共享目录，必须为共享目录定义一个共享名；“comment”为共享资源的描述，方便用户访问时对共享文件进行区分，在这里定义设置为“smb”；“path”为共享文件存放的绝对路径，因为自己的work目录是专门用来学习的所以将它设置为共享目录；“public”行可以设置共享资源是否允许匿名访问，设置为“yes”表示允许匿名访问，设置为“no”表示禁止匿名访问；“readonly”行为对文件读取进行设置，设置为“yes”表示只读，设置为“no”表示可以读和写。
+
+ 
+第二步：设置访问用户
+对于访问Samba服务器的帐号，需要首先在系统中建立同名系统帐号，如想要建立一个名为“smb”的Samba帐号，需首先在系统中建立名为“smb”的系统用户。建立Samba帐号的命令为“smbpasswd -a 用户名”。输入命令之后，还需要设置Samba帐号密码，Samba帐号密码与系统帐号密码可以不一致。操作如下：
+ 
+2.1 建立名为“smb”的系统用户
+我的系统中没有这个系统用户所以先要建立，如果有就可以跳过这一步。
+#sudo useradd smb
+#sudo passwd smb
+ 
+2.2 建立名为“smb”的Samba帐号
+#smbpasswd -a smb
+New SMB password:smb
+Retype new SMB password:smb
+
+注：用户名和密码信息通常存放在/etc/samba/smbpasswd中，Samba服务器在每次用户进行访问时，会将用户提交的信息与smbpasswd保存的信息进行对比，通过后才与客户端建立连接，允许客户端访问。如果在/etc/samba中找不到smbpasswd文件，是因为samba启用了tdbsam验证，可以修改smb.conf文件的“passdb backend = tdbsam”行，然后加上“smb passwd file = /etc/samba/smbpasswd”。
+
+ 
+配置完成后要重启samba
+#sudo /etc/init.d/smbd restart
+ 
+最后，为了方便其他主机方便使用work文件夹，可以将其进行网络驱动器设置。
+找到cmd，将Ubuntu的IP地址输入进去：
+\\192.168.0.4
+输入用户名smb，输入密码smb，找到工具项，映射网络驱动器，别忘了给自己的网络驱动器起个好听的名字。
+ 
