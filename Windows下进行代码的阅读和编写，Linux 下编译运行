@@ -20,7 +20,7 @@ Windows下进行代码的阅读和编写，Linux 下编译运行。
   # cp /etc/samba/smb.conf /etc/samba/smb.conf.bak   # 备份samba的配置文件
   # gedit /etc/samba/smb.conf
   
-    A. 找到"# security = user"将它改成"security = share"   # 注：去掉行首的注释符号
+    A. 找到"# security = user"将它改成"security = share" ，并去掉行首的注释符号(表示要启用共享功能)
        说明：security = share表示任何人都可以不需要输入密码登录；默认的security = user表示每个用户必须输入密码才能登录。
     B. 在配置文件的最后加入以下内容(不包含行末注释说明部份)
     [share]                        # 共享文件名，可自定义，与共享目录名可不一致
