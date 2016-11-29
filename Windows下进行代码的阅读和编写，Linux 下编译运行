@@ -1,0 +1,58 @@
+
+Windows下进行代码的阅读和编写，Linux 下编译运行。
+
+下文是该环境的安装和配置过程，记录备忘。
+ 
+ 
+以下主要分成两部分，一是Ubuntu下Samba的安装和配置；二是Windows下将Linux共享目录映射为网络驱动器。
+
+
+一. Ubuntu 11.04 下 Samba 的安装和配置
+  1) 安装samba软件包
+  # sudo apt-get install samba
+  # sudo apt-get install smbclient
+ 
+  2) 创建共享目录:(目录名可自定义)
+  # mkdir /home/share
+  # chmod -R 777 /home/share    # 若不更改权限，windows下不能写入（适用于只读共享）!!!
+ 
+  3) 修改Samba配置文件:
+  # cp /etc/samba/smb.conf /etc/samba/smb.conf.bak   # 备份samba的配置文件
+  # gedit /etc/samba/smb.conf
+  
+    A. 找到"# security = user"将它改成"security = share"   # 注：去掉行首的注释符号
+       说明：security = share表示任何人都可以不需要输入密码登录；默认的security = user表示每个用户必须输入密码才能登录。
+    B. 在配置文件的最后加入以下内容(不包含行末注释说明部份)
+    [share]                        # 共享文件名，可自定义，与共享目录名可不一致
+    comment=VMware Ubuntu Share    # 共享说明，可自定义
+    path=/home/share               # 共享目录，应与之前创建的一致，必须为绝对路径
+    public=yes                     # 允许所有人都能够看到此目录
+    writable=yes                   # 允许用户在此目录下可写
+ 
+  4) 重启Samba服务
+  # sudo /etc/init.d/smbd restart
+  
+  Samba 的安装和配置已完成。
+  
+二. Windows 7 下将步骤一的共享目录映射为网络驱动器。
+  1) 确保Ubuntu的网络配置OK，查看并记录IP地址，这里以192.168.128.128为例。可在Windows 7的cmd下先用ping检测下网络是否畅通。
+     如OK，在Windows的资源管理器地址栏中输入"\\192.168.128.128\share"，即可访问该共享目录。
+     
+  2) 在[计算机]图标上点右键（XP可能是在[网上邻居]图标上点右键），选择"映射网格驱动器(N)..."
+     在“驱动器”一栏选择合适的盘符，这里选择为W；
+     在“文件夹”一栏输入"\\192.168.128.128\share"；
+     点击完成
+     。
+  3) 双击[计算机]，即可看到一个盘符为W的网络驱动器。
+  
+  
+三. 共享代码。
+  把代码放在以上创建的共享目录里，在此创建SourceInsight工程，即可在Windows中用SourceInsight对代码进行修改和编写；在Ubuntu中进行编译。
+ 
+====================================================================
+ 
+第二种办法使用vmware自带的共享文件夹功能
+ 
+说是自带，其实需要安装vmware-tools，具体怎么安装请自行百度；
+ 
+共享目录在linux端是/mnt/hgfs；在win中需要在vmware的系统里setting-》option-》shared folders里设置
