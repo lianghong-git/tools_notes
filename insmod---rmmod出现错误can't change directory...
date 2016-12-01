@@ -1,23 +1,32 @@
- 当我insmod一个module以后，需要rmmod该module的时候，出现错误：rmmod: can't change directory to '/lib/modules': No such file or directory
+当insmod一个module以后，rmmod该module的时候，出现错误：rmmod: can't change directory to '/lib/modules': No such file or directory
+
 解决方法：
 1. mkdir /lib/modules
 2. 运行rmmod，接着会出错：
-rmmod: can't change directory to '3.3.0-14.2-build1-01491-g42fac65-dirty': No such file or directory
- 3. mkdir /lib/modules/3.3.0-14.2-build1-01491-g42fac65-dirty
- 4. 运行rmmod led_brightness.ko，没有任何打印消息， 使用lsmod, 打印消息：
+   rmmod: can't change directory to '3.3.0-14.2-build1-01491-g42fac65-dirty': No such file or directory
+3. mkdir /lib/modules/3.3.0-14.2-build1-01491-g42fac65-dirty
+4. 运行rmmod led_brightness.ko，没有任何打印消息， 使用lsmod, 打印消息：
 led_brightness 4124 0 - Live 0xbf005000 (O)
-我的模块依然存在。这是因为较新版本的busybox 1.13.1+ 要卸载模块必须要 “完全匹配模块名”才行，原来在老版本的使用模块文件名就能卸载，现在发现不行了。
+
+我的模块依然存在。
+
+这是因为较新版本的busybox 1.13.1+ 要卸载模块必须要 “完全匹配模块名”才行，原来在老版本的使用模块文件名就能卸载，现在发现不行了。
 所以使用rmmod led_brightness，出现打印消息：
 [  679.940000] led-brightness led-brightness : Free brightness data buffer.
 [  679.950000] led-brightness : Destroy Char Device
 [  679.950000] led-brightness : Destroy led_brightness Class.
 [  679.960000] led-brightness : Release Char Device Region.
 表明模块已经被移除。使用lsmod命令查看，led_brightness已经不存在了。
-尝试了几次insmod和rmmod，均没有问题。但是我使用的是ramdisk，也就是说每次启动系统以后都需要去lib下面建目录，这个太麻烦了，我就修改randisk的版本文件。我是用的ramdisk版本文件名为：ramdisk32M.image.gz。 过程如下：
+
+尝试了几次insmod和rmmod，均没有问题。
+
+但是我使用的是ramdisk，也就是说每次启动系统以后都需要去lib下面建目录，太麻烦.就修改randisk的版本文件。
+
+我是用的ramdisk版本文件名为：ramdisk32M.image.gz。 过程如下：
 1. 新建一个ramdisk文件夹， 将ramdisk32M.image.gz文件copy到ramdisk文件夹下。
 2. 使用gunzip ramdisk32M.image.gz 对ramdisk32M.image.gz进行解压，得到ramdisk32M.image
 3. 在randisk文件夹下新建ram_image_mount文件夹，使用mount -o loop ramdisk32M.image ram_image_mount/命令将ramdisk32M.image挂载到 ram_image_mount文件夹
 4. 在ram_image_mount文件夹下新建目录： mkdir lib/modules. mkdir lib/modules/3.3.0-14.2-build1-01491-g42fac65-dirty.
 5. umount ram_image_mount
 6. gzip -v9 ramdisk32M.image
-即可得到新的ramdisk32M.image.gz， 用这个文件替换以前的文件，即可一劳永逸了。
+即可得到新的ramdisk32M.image.gz， 用这个文件替换以前的文件，即可一劳永逸。
