@@ -2,12 +2,7 @@
 使用stty設定baudrate
 我使用busybox的stty
 
-設定的command如下
-
 ./busybox stty -F /dev/ttymxc1 115200
-
-
-
 
 
 
