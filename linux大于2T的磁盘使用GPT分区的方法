@@ -1,0 +1,61 @@
+linux大于2T的磁盘使用GPT分区的方法
+
+
+众所周知，在linux下磁盘分区大于2TB的时候我不能使用常用Fdisk命令。是不是就没有办法在linux使用大容量的磁盘呢？答案：不是
+在linux我们可以先把大容量的磁盘进行转换，转换为GPT格式。由于GPT格式的磁盘相当于原来MBR磁盘中原来保留4个 partition table的4*16个字节只留第一个16个字节，其它的类似于扩展分区，真正的partition table在512字节之后，所以对GPT磁盘表来讲没有四个主分区的限制。 
+
+对GPT磁盘分区表进行操作，我们要使用功能强大的parted命令。 
+
+例：常用的parted命令 
+
+# parted /dev/sdb 
+GNU Parted 1.8.1 
+Using /dev/sdb 
+Welcome to GNU Parted! Type 'help' to view a list of commands. 
+
+(parted) mklabel gpt 
+将MBR磁盘格式化为GPT 
+
+(parted) mkpart primary 0 100 
+划分一个起始位置为0大小为100M的主分区 
+
+(parted) mkpart primary 100 200 
+划分一个起始位置为100M大小为100M的主分区 
+
+(parted) mkpart primary 0 -1 
+
+划分所有空间到一个分区 
+
+(parted) print 
+
+打印当前分区 
+
+(parted) quit 
+
+可能还会用到的一些命令 
+
+(parted) mklable msdos 
+
+如果要反过来.将GPT磁盘转化为MBR磁盘 
+
+在这样分完分区后,还要使用mkfs.ext3来进行格式化 
+
+#partprobe 
+
+#mkfs.ext3 -F /dev/sdb1 
+
+我们实践操作下： 
+
+以redhat 5 为例： 
+
+parted /dev/sdb mklabel gpt。 转换成GPT。 
+parted /dev/sdb mkpart primary 0 1000000 创建1T的分区。 
+mkfs -t ext3 /dev/sdb1 
+mount /dev/sdb1 /mnt/b 
+这样在linux 系统的mnt目录下挂着大磁盘的分区b。 
+
+开机自己动挂载 
+
+vi /etc/fstab 
+
+/dev/sdb1 /mnt/b auto defaults 0 0
