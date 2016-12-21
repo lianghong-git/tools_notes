@@ -1,0 +1,24 @@
+             Linux I2C工具查看配置I2C设备             
+             
+             
+             讀寫codec中register的值。
+             的工具 – i2c tools。先到lm-sensors下載soure code，然後cross compile成arm的執行檔，就可以放到板子來試試看了。
+             
+             
+             
+             i2c-tools中含有四個執行檔i2cdetect – 用來列舉I2C bus和上面所有的裝置
+             i2cdump – 顯示裝置上所有register的值
+             i2cget – 讀取裝置上某個register的值
+             i2cset – 寫入裝置上某個register
+             
+             以下是我用beagleboard得到的結果
+             root@android:/temp # ./i2cdetect -l 
+             i2c-1 i2c OMAP I2C adapter I2C adapter 
+             i2c-2 i2c OMAP I2C adapter I2C adapter 
+             i2c-3 i2c OMAP I2C adapter I2C adapter
+             
+             原來beagleboad上有三組I2C bus。
+             
+             i2cdetect也可以用來看bus上有那些裝置
+             root@android:/temp # ./i2cdetect -y -r 
+             1 0 1 2 3 4 5 6 7 8 9 a b c d e f 00: -- -- -- -- -- -- -- -- -- -- -- -- -- 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 40: -- -- -- -- -- -- -- -- UU UU UU UU -- -- -- -- 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 70: -- -- -- -- -- -- -- --這表示bus上有四備裝置，位址分別是0×48, 0×49, 0x4a, 0x4b。 我們要找的是codec，beagleboard上的codec是TI的TPS65950，從technical reference manual可以得知codec在I2C上的位址是0×49。 然後用i2cdump來看codec中所有register的值[root@android:/temp # ./i2cdump -f -y 1 0x49 No size specified (using byte-data access) 0 1 2 3 4 5 6 7 8 9 a b c d e f 0123456789abcdef 00: 00 00 00 00 00 00 00 00 00 00 0f 0f 0f 0f 00 00 ..........????.. 10: 3f 3f 3f 3f 25 00 00 00 00 32 32 32 32 00 00 55 ????%....2222..U 20: 00 00 00 00 00 00 00 00 00 00 00 05 00 00 00 00 ...........?.... 30: 13 00 00 00 00 79 11 00 00 00 06 00 44 69 02 00 ?....y?...?.Di?. 40: 00 00 00 00 32 00 00 00 00 00 00 00 00 00 00 1b ....2..........? 50: 00 00 03 f0 05 00 00 00 1a 1a 00 e1 93 00 00 00 ..???...??.??... 60: 14 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?............... 70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................ 80: 00 00 00 00 00 2f 00 09 10 ff ff ff ff ff ff ff ...../.??....... 90: ff 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 ........?....... a0: 00 00 00 00 00 00 00 00 00 00 04 18 50 01 44 05 ..........??P?D? b0: 00 00 00 00 fe ff 03 00 00 00 ff ff 03 00 00 00 ....?.?.....?... c0: 03 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 ?....?.......... d0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................ e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................ f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................再來我用i2cset來改變headset gain看看會不會改變播放的音量。先用以下的指令來播放wav檔，我是用sample rate 44.1k的檔案，其它sample rate的wav可能無法播放。root@android:/temp # ./tinymix 13 1 root@android:/temp # ./tinymix 45 1 root@android:/temp # ./tinymix 48 1 root@android:/temp # ./tinyplay 440.wav Playing sample: 2 ch, 44100 hz, 16 bit headset gain的register的位址是0×23，在播放的過程中打開另一個adb shell，用i2cset來增加gain root@android:/temp # ./i2cset -f -y 1 0x49 0x23 5音量果然變大了!i2cget的用法類似i2cget，這裡就不多做說明了。 
