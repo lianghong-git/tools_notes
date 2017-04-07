@@ -1,0 +1,71 @@
+How to extract (android )boot.img?
+
+
+boot.img is a small(ish) file that contain two main parts.
+          * kernel(important for android)
+          * ramdisk( a core set of instruction & binaries)
+
+
+Unpack boot.img:
+
+It contains the following steps:
+
+Download the tool using wget http://android-serialport-api.googlecode.com/files/android_bootimg_tools.tar.gz
+Extract the file using tar xvzf android_bootimg_tools.tar.gz.
+
+It contains two binaries:
+       * unpackbootimg
+       * mkbootimg
+       
+3.Then execute ./unpackbootimg -i <filename.img> -o <output_path>
+
+It will contain,
+
+           * boot.img-zImage     ----> kernel
+           * boot.img-ramdisk.gz ----> ramdisk
+We can extract ramdisk also, using the following command
+
+gunzip -c boot.img-ramdisk.gz | cpio -i
+After changing the files, we can again pack those files as boot.img using mkbootimg
+
+Have fun!
+
+
+I am getting error at third step please help me...the terminal says unpackbootimg command not found – Rahul Matte Jun 17 '14 at 10:04
+  	 	
+Getting the same error for step 3 on Mint 17 here. Tried running them by sudo and after chmod 755 to no avail. – Nisse Sep 11 '14 at 4:41
+  	 	
+In step 3, make sure output_path already exists, otherwise unpackbootimg will segfault. – Aldaviva Feb 13 '16 at 3:07
+1	 	
+The link for the tool is dead. – VoteToClose Jan 18 at 15:05
+  	 	
+Just clone the code from github: github.com/osm0sis/mkbootimg – Albus Dumbledore Mar 15 at 5:37
+
+
+boot.img is not a compressed filesystem image like system.img. 
+It is read by the bootloader, and contains little more than a kernel image and a ramdisk image.
+
+Some binary distribution ship the kernel and ramdisk images separately. 
+In that case you don't need to do anything with boot.img, just regenerate a new one with mkbootimg.
+
+
+
+If you need to extract information from a boot.img, try split_bootimg (by William Enck, via the Android wiki).
+The link to split_bootimg is no longer valid. – Nathan Osman Sep 28 '13 at 3:19
+  	 	
+@NathanOsman Replaced by a link to the copy on William Enck's page. – Gilles Sep 28 '13 at 10:10
+add a comment
+up vote
+0
+down vote
+I use opensuse. I have installed abootimg. If you want to extract (boot|recovery).img run such:
+
+abootimg -x (boot|recovery).img
+Then you get next files: bootimg.cgf, zImage and initrd.img
+
+If you want to pack image you run such
+
+abootimg --create (boot|recovery).img -f bootimg.cfg -k zImage -r initrd.img
+Then you'll get (boot|recovery).img
+
+Enjoy
