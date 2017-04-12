@@ -28,7 +28,7 @@ l 现在使用的git库是将由repo管理266个小git合并成一个git库导�
 PATH=~/bin:$PATH
 chmod a+x ~/bin/repo
 Repo设置成功后，输入repo会提示运行repo init进行初始化
-yangfei@YYRD-4:~$ repo
+guanghu@linux:~$ repo
 error: repo is not installed.  Use "repo init" to install it here.
 
 
@@ -39,11 +39,11 @@ error: repo is not installed.  Use "repo init" to install it here.
     Repo sync
  2.4   初始化分支
    Sync成功后，所有的Git库都处于 no branch状态，不能进行操作
-     yangfei@YYRD-4:~/test$ repo branch
+     guanghu@linux:~/test$ repo branch
              (no branches)
 初化分支
 Repo start master –all
-    yangfei@YYRD-4:~/test$ repo start master --all
+    guanghu@linux:~/test$ repo start master --all
        Starting master: 100% (45/45), done.
    --all意思为对所有项目操作，如果对某个项目操作如下
   Repo start master(分支名) cmd1(项目名)
