@@ -3,7 +3,10 @@ repo使用
 1 repo 简介
 Repo是google用Python脚本写的调用git的一个脚本，主要是用来下载、管理Android项目的软件仓库；
 从高通或google下载代码是通过repo下载的，是由repo管理的266个git组成的
-l现在使用的git库是将由repo管理266个小git合并成一个git库导入
+
+
+l 现在使用的git库是将由repo管理266个小git合并成一个git库导入
+
 目前导入的repo是将项目定制化的内容取出，拆成由repo管理45个小git；
   Repo通过manifest.xml来同步代码，xml文件内容如下：
  <manifest>
