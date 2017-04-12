@@ -1,0 +1,64 @@
+repo使用
+ 
+1 repo 简介
+Repo是google用Python脚本写的调用git的一个脚本，主要是用来下载、管理Android项目的软件仓库；
+从高通或google下载代码是通过repo下载的，是由repo管理的266个git组成的
+l现在使用的git库是将由repo管理266个小git合并成一个git库导入
+目前导入的repo是将项目定制化的内容取出，拆成由repo管理45个小git；
+  Repo通过manifest.xml来同步代码，xml文件内容如下：
+ <manifest>
+   <remote fetch="ssh://gitserver" name="origin" review="http://gerrit:8080"/>  
+     <default revision=“master” remote=“origin” />     
+     <project path="build" name="platform/build"/>
+     <project path="abi/cpp" name="platform/abi/cpp" />
+     <project path="bionic" name="platform/bionic" />
+   <project path="bootable/bootloader/lk" name="kernel/lk" />
+   
+   
+2 Repo初始化
+2.1     Repo脚本获取（仅针对第一次使用）
+    repo脚本已导入git库，库名为git-repo.git
+   克隆repo库
+   git clone gitserver:git-repo
+   将git-repo库中的repo脚本拷贝到～/bin目录
+增加权限
+PATH=~/bin:$PATH
+chmod a+x ~/bin/repo
+Repo设置成功后，输入repo会提示运行repo init进行初始化
+yangfei@YYRD-4:~$ repo
+error: repo is not installed.  Use "repo init" to install it here.
+
+
+2.2     Repo初始化
+     Repo初始化，会在根目录 建立.repo
+ 2.3 Repo同步
+    同步repo代码
+    Repo sync
+ 2.4   初始化分支
+   Sync成功后，所有的Git库都处于 no branch状态，不能进行操作
+     yangfei@YYRD-4:~/test$ repo branch
+             (no branches)
+初化分支
+Repo start master –all
+    yangfei@YYRD-4:~/test$ repo start master --all
+       Starting master: 100% (45/45), done.
+   --all意思为对所有项目操作，如果对某个项目操作如下
+  Repo start master(分支名) cmd1(项目名)
+  
+  
+2.5  Repo使用（分支初始化之后 ，操作同git）
+ Repo初如化分支后，可切入各git库进行git的操作----3  Repo常用命令
+ Repo forall –c git …..
+           对由repo管理的git库进行操作，
+            如repo forall –c git checkout  45451
+           所有库检出45451分支与远程45451分支对应（若无，则跳过）
+Repo checkout <branchname> [projectname] 
+            作用：等同于带项目参数的git checkout
+Repo branch [projectname]
+          作用：读取项目分支的情况
+Repo abandon <branchname> [projectname]
+         作用：删除指定项目的指定分支,强制删除不管是否有合并,等同git branch –D
+Repo version
+          作用：显示repo版本
+ Repo status [projectname] 
+          作用：显示分支及修改情况
