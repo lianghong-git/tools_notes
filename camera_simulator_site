@@ -1,3 +1,18 @@
+
+//////////////////////////////////////////////////////////////////////////////
+Exposure
+Lens
+Autofocus
+Convolution
+Color
+Gamma
+Panoramas
+
+//以上这些的模拟工具网站，very good：
+http://graphics.stanford.edu/courses/cs178/applets/applets.html
+//////////////////////////////////////////////////////////////////////////
+
+
 //PDAF simulator
 http://graphics.stanford.edu/courses/cs178/applets/autofocusPD.html
 
