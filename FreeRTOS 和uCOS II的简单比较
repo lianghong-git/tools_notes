@@ -1,0 +1,18 @@
+
+FreeRTOS 和uC/OS-II的简单比较
+
+http://www.stmfans.com/bbs/viewthread.php?tid=2512&highlight=freertos
+
+这两种RTOS, 现在粗略比较一下。
+
+freeRTOS比uCOS II优胜的地方：
+1。内核ROM和耗费RAM都比uCOS 小，特别是RAM。 这在单片机里面是稀缺资源，uCOS至少要5K以上， 而freeOS用2~3K也可以跑的很好。
+2。freeRTOS 可以用协程（Co-routine），减少RAM消耗（共用STACK）。uCOS只能用任务（TASK，每个任务有一个独立的STACK）。
+3。freeRTOS 可以有优先度一样的任务，这些任务是按时间片来轮流处理，uCOSII 每个任务都只有一个独一无二的优先级。
+   因此，理论上讲，freeRTOS 可以管理超过64个任务，而uCOS只能管理64个。
+4。freeRTOS 是在商业上免费应用。uCOS在商业上的应用是要付钱的。
+
+freeRTOS 不如uCOS的地方：
+1。比uSOS简单，任务间通讯freeRTOS只支持Queque， Semaphores， Mutex。 uCOS除这些外，还支持Flag, MailBox.
+2。uCOS的支持比freeRTOS 多。除操作系统外，freeRTOS只支持TCPIP， uCOS则有大量外延支持，比如FS， USB， GUI， CAN等的支持
+3。uCOS可靠性更高，而且耐优化，freeRTOS 在我设置成中等优化的时候，就会出问题。
