@@ -1,0 +1,22 @@
+Makefile 的选项: CFLAGS、 CPPFLAGS、 LDFLAGS, LIBS 的区别
+
+LDFLAGS是选项，LIBS是要链接的库。都是给ld的，只不过区别是?
+
+如：
+LDFLAGS = -L/var/xxx/lib -L/opt/MySQL/lib
+LIBS = -lmysqlclient -liconv
+
+LDFLAGS告诉链接器从哪里寻找库文件，
+LIBS告诉链接器要链接哪些库文件。   不过使用时链接阶段这两个参数都会加上，所以你即使将这两个的值互换，也没有问题。
+
+进一步说说LDFLAGS指定-L虽然能让链接器找到库进行链接，但是运行时链接器却找不到这个库，如果要让软件运行时库文件的路径也得到扩展，
+那么我们需要增加这两个库给"-Wl,R"
+
+LDFLAGS = -L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib
+
+如果在执行./configure 以前设置环境变量export LDFLAGS="-L/var/xxx/lib -L/opt/mysql/lib -Wl,R/var/xxx/lib -Wl,R/opt/mysql/lib" ，
+
+那么执行configure以后，Makefile将会设置这个选项， 链接时会有这个参数，编译出来的可执行程序的库文件搜索路径就得到扩展了。
+------------------------------------------------------------------------------------------------------------------------
+CFLAGS 或 CPPFLAGS的用法
+CPPFLAGS='-I/usr/local/libjpeg/include -I/usr/local/libpng/include'
