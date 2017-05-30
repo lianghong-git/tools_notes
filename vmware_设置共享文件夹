@@ -1,0 +1,35 @@
+
+Ubuntu 16.04安装/更新VMware tools & 设置共享文件夹方法  
+
+
+       
+
+
+虚拟机：VMware Workstation 12 Player，版本12.5.1 build-4542065
+系统：Ubuntu 16.04 LTS
+安装/更新VMware tools
+
+1、VMware Workstation 12 Player中：Player -> 管理 -> 更新VMware Tools…此时player会打开虚拟CD驱动器（/media目录），里面有VMwareTools的压缩包VMwareTools-xxx-xxx.tar.gz
+2、将VMwareTools-xxx-xxx.tar.gz复制到Home目录下（在光驱中只读），通过终端命令解压并访问其中的内容：
+
+1. sudo tar zxf VMwareTools-xxx.tar.gz #解压
+2. cd /vmware-tools-distrib #进入文件夹
+3. sudo ./vmware-install.pl #运行安装脚本
+
+它会先卸vmware tools 然后再安装，其中有很多提示，一直按Enter或者输入【】提示yes和no，直到安装完毕。
+设置共享文件夹
+
+为了实现虚拟机与宿主机的文件交互，可以设置共享文件夹方便地互相访问文件。
+
+【貌似设置共享文件夹必须安装VMware tools】
+
+1、在宿主机创建一个共享文件夹，如D:/share
+2、VMware Workstation 12 Player中：Player -> 管理 -> 虚拟机设置，在“选项”选项卡中设置文件夹共享为D:/share，并总是启用
+3、设置的共享文件夹在Ubuntu中位于/mnt/hgfs下，可通过终端命令进入，或桌面点击：Computer -> mnt -> hgfs查看，成功的话会看到共享文件夹share
+设置文件夹快捷方式到桌面
+
+普通文件夹可以直接右击 -> make link 创建快捷方式，但貌似computer根目录下的文件夹无法使用，但可以通过命令设置：
+
+ln -s /mnt/hgfs/share /home/wkw1125/share 
+
+以上命令为/mnt/hgfs/share文件夹创建一个名为share快捷方式，位于home文件夹，剪切这个share快捷方式到任意位置（如desktop）即可访问。
