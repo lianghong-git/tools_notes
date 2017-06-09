@@ -7,7 +7,7 @@
 ' 【注意】
 ' ・「プロジェクト」→「参照の追加」→「COM」→「Microsoft Excel 11.0 ObjectLibrary」を選択する。
 '
-' 2007.08.07 NnTt
+' 2017.06.07 shiguanghu 
 '
 
 '
@@ -52,15 +52,10 @@ Public Class Form1
         LineNo = 1
 
         Button1.Enabled = True
-        Button2.Enabled = True
+        Button2.Enabled = False
         Button3.Enabled = False
         Button4.Enabled = False
-        Button5.Enabled = False
-
-        ' IMEを無効にする
-        With Me
-            Me.ImeMode = Windows.Forms.ImeMode.Disable
-        End With
+        Button5.Enabled = True
 
         ' COM port
         With ComboBox1.Items
@@ -75,8 +70,11 @@ Public Class Form1
             .Add("COM8")
             .Add("COM9")
             .Add("COM10")
+            .Add("COM11")
+            .Add("COM12")
+            .Add("COM13")
         End With
-        ComboBox1.Text = "COM1"
+        ComboBox1.Text = "COM9"
 
         ' 速度
         With ComboBox2.Items
@@ -89,7 +87,7 @@ Public Class Form1
             .Add("57600")
             .Add("115200")
         End With
-        ComboBox2.Text = "9600"
+        ComboBox2.Text = "115200"
 
         'パリティ
         With ComboBox3.Items
@@ -121,10 +119,10 @@ Public Class Form1
         ComboBox5.Text = "1"
 
         ' 受信バッファサイズ
-        TextBox1.Text = "1024"
+        TextBox1.Text = "2048"
 
         ' 送信バッファサイズ
-        TextBox2.Text = "512"
+        TextBox2.Text = "1024"
 
         ' パリティエラー時の置換文字
         TextBox3.Text = "?"
@@ -146,22 +144,34 @@ Public Class Form1
         ' Excelの行番号の初期化
         ' LineNo = 1
 
+        If (txtSendData.Text.Length = 0) Then
+            MessageBox.Show("制御CMDを入力してください！", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            txtSendData.Focus()
+            Exit Sub
+        End If
+
         ' Excelの表示
         xlApp.Visible = True
 
         RS232C_Open()
 
+        RS232C_Send()
+
+        Me.SerialPortx.BaudRate = 115200
+
+        '_RS232C_Receive(sender, e)   'Private Sub _RS232C_Receive(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles _RS232C.DataReceived
+
         Button1.Enabled = False
-        Button2.Enabled = False
+        Button2.Enabled = True
         Button3.Enabled = False
-        Button4.Enabled = True
+        Button4.Enabled = False
         Button5.Enabled = False
     End Sub
 
     '
     ' プログラムの終了
     '
-    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+    Private Sub Button5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
         Me.Close()
     End Sub
 
@@ -191,9 +201,9 @@ Public Class Form1
         End If
 
         Button1.Enabled = True
-        Button2.Enabled = True
+        Button2.Enabled = False
         Button3.Enabled = True
-        Button4.Enabled = False
+        Button4.Enabled = True
         Button5.Enabled = True
 
         Environment.Exit(0)
@@ -202,7 +212,7 @@ Public Class Form1
     '
     ' Excelの全てのセルを消去する
     '
-    Private Sub Button5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button5.Click
+    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
         ' Excelの行番号の追加
         LineNo = 1
 
@@ -213,24 +223,24 @@ Public Class Form1
     '
     ' 記録停止
     '
-    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         ' RS-232Cの終了処理
         RS232C_Close()
 
         Button1.Enabled = True
         Button2.Enabled = True
         Button3.Enabled = True
-        Button4.Enabled = False
+        Button4.Enabled = True
         Button5.Enabled = True
     End Sub
 
     '
     ' Excelファイルの保存処理
     '
-    Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
         Dim ofd As New OpenFileDialog()
 
-        ofd.FileName = "Data_" + DateTime.Now.ToString("HHmmss") + ".xls"
+        ofd.FileName = "Auto_Focus_Test_Data_" + DateTime.Now.ToString("HHmmss") + ".xls"
         ofd.InitialDirectory = "C:\"
         ofd.Filter = "Excelファイル(*.xls;.XLS)|*.xls;*.XLS|すべてのファイル(*.*)|*.*"
         ofd.FilterIndex = 0
@@ -296,14 +306,14 @@ Public Class Form1
                 .DtrEnable = CheckBox3.Checked
 
                 If (.IsOpen = True) Then
-                    MessageBox.Show("Already open COM Port" & .PortName, "m(_ _)m", _
+                    MessageBox.Show("Already open COM Port" & .PortName, "m(_ _)m",
                                     MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Exit Sub
                 End If
 
                 ' COM portを開く
                 Call .Open()
-                Call AddMessage(.PortName + " port open")
+                Call AddMessage(.PortName + " Port Open!")
             End With
 
         Catch ex As Exception
@@ -317,14 +327,14 @@ Public Class Form1
     Private Sub RS232C_Close()
         If (_RS232C.IsOpen = True) Then
             Call _RS232C.Close()
-            Call AddMessage(_RS232C.PortName + " port close")
+            Call AddMessage(_RS232C.PortName + " Port Close!")
         End If
     End Sub
 
     '
     ' RS-232Cの受信
     '
-    Private Sub _RS232C_RS232C_Receive(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles _RS232C.DataReceived
+    Private Sub _RS232C_Receive(ByVal sender As Object, ByVal e As System.IO.Ports.SerialDataReceivedEventArgs) Handles _RS232C.DataReceived
         Dim xlCells As Excel.Range
         Dim xlRange As Excel.Range
         Dim addmsg As New AddMessageDelegate(AddressOf AddMessage)
@@ -348,7 +358,6 @@ Public Class Form1
         If r <> False Then
             ' TextBoxに受信文字を表示する
             ' この処理を入れると正常にCOMが停止出来ずにフリーズするのでコメントする。
-            ' 2007.8.10 Naoki Takahashi
             ' TextBox4.Invoke(addmsg, New Object() {"RCV: " + strDataReceived})
 
             ' 必ず決められたフォーマットで送信されると仮定。
@@ -402,25 +411,26 @@ Public Class Form1
     ' RS-232Cの送信
     '
     Private Sub RS232C_Send()
-        'if (txtSendData.Text.Length = 0) Then
-        'MessageBox.Show("送信文字列を入力してください", "Error", _
-        '                MessageBoxButtons.OK, MessageBoxIcon.Error)
-        'txtSendData.Focus()
-        'Exit Sub
-        'End If
+        If (txtSendData.Text.Length = 0) Then
+            MessageBox.Show("送信文字列を入力してください", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+            txtSendData.Focus()
+            Exit Sub
+        End If
 
-        'Try
-        '_RS232C.WriteLine(Str)
-        'Call AddMessage("[SND]" + txtSendData.Text)
-        'Catch ex As Exception
-        'MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        'End Try
+        Try
+            _RS232C.WriteLine("Direct " + txtSendData.Text)
+            '_RS232C.WriteLine(Str)
+            'Call AddMessage("Direct " + txtSendData.Text)
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     '
     ' RS-232Cのエラーイベント
     '
-    Private Sub _RS232C_ErrorReceived(ByVal sender As Object, _
+    Private Sub _RS232C_ErrorReceived(ByVal sender As Object,
                                    ByVal e As System.IO.Ports.SerialErrorReceivedEventArgs) _
                                    Handles _RS232C.ErrorReceived
 
@@ -446,7 +456,7 @@ Public Class Form1
     '
     ' RS-232CのPin変更イベント
     '
-    Private Sub _RS232C_PinChanged(ByVal sender As Object, _
+    Private Sub _RS232C_PinChanged(ByVal sender As Object,
                                 ByVal e As System.IO.Ports.SerialPinChangedEventArgs) _
                                 Handles _RS232C.PinChanged
 
@@ -477,7 +487,7 @@ Public Class Form1
         ' COM オブジェクトの使用後、明示的に COM オブジェクトへの参照を解放する
         Try
             ' 提供されたランタイム呼び出し可能ラッパーの参照カウントをデクリメントする
-            If Not objCom Is Nothing AndAlso System.Runtime.InteropServices. _
+            If Not objCom Is Nothing AndAlso System.Runtime.InteropServices.
                                                       Marshal.IsComObject(objCom) Then
                 Dim I As Integer
                 Do
