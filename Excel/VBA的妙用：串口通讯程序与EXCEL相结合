@@ -1,0 +1,130 @@
+VBA的妙用：串口通讯程序与EXCEL相结合
+
+
+
+
+1 VBA简介
+　　Visual Basic的应用程序版（VBA）是Microsoft公司长期追求的目标，使可编程应用软件得到完美的实现，它作为一种通用的宏语言可被所有的Microsoft 可编程应用软件所共享。在没有VBA以前，一些应用软件如Excel、Word、Access、Project等都采用自己的宏语言供用户开发使用，但每种宏语言都是独立的，需要用户专门去学习，它们之间互不兼容，使得应用软件之间不能在程序上互联。拥有一种可跨越多个应用软件，使各应用软件产品具有高效、灵活且一致性的开发工具是至关重要的。VBA作为一种新一代的标准宏语言，具有上述跨越多种应用软件并且具有控制应用软件对象的能力，使得程序设计人员仅需学习一种统一的标准宏语言，就可以转换到特定的应用软件上去，程序设计人员在编程和调试代码时所看到的是相同的用户界面，而且VBA与原应用软件的宏语言相兼容，以保障用户在代码和工作上的投资。有了VBA以后，多种应用程序共用一种宏语言，节省了程序人员的学习时间，提高了不同应用软件间的相互开发和调用能力。
+
+2 串口通讯程序
+　　简单的串口通讯程序一般是先由上位机向下位机发送读(write)或写(read)数据命令，然后等待下位机应答；下位机接受到命令之后，首先要对数据命令进行校验，对于符合校验约束的命令下位机会将相应的数据回复到上位机，对于不符合校验约束的命令下位机或将其抛弃或回复错误信息；上位机接收到下位机的响应之后，首先要对接收到的回复信息进行校验，对不符合校验约束的数据进行异常处理，对符合校验约束的信息进行解码，解码之后的信息便是上位机从下位机获得的有效信息了。
+　　上位机向串口发送读命令之后需要等待下位机应答并读取回复信息，常用的等待有3种方式：
+1） 轮询式
+　　上位机向串口发送读命令之后一直等待下位机应答，通讯程序处于一个等待循环中。
+　　优点：速度快、误码率低（几乎不存在误码）。
+　　缺点：消耗CPU。（解决办法：使用Sleep()API函数）。
+2） 消息式
+　　消息式通讯是采用响应WINDOWS消息的办法读取串口。
+　　优点：节省CPU、误码率低。
+　　缺点：发送接收机制过于繁琐。
+3） 定时接收式
+　　定时接收式通讯是根据预设的定时器时间进行读取数据。
+　　优点：发送接收机制相对简单、节省CPU。
+　　缺点：误码率太高，不同的硬件需要配置不同的通讯时间参数，需要严格的校验运算。
+
+3 EXCEL-VBA串口通讯实例
+　　软件：EXCEL。
+　　硬件：艾默生EC10 PLC。
+　　功能：通过EXCEL中的按钮控制PLC的输出继电器Y0。
+　　界面：RUN(运行通讯)、STOP(停止通讯)、Y0(Y0 ON/OFF控制)。
+
+　　主程序：
+　　Option Explicit
+　　Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+　　Public Declare Function SetTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
+　　Public Declare Function KillTimer Lib "user32" (ByVal hwnd As Long, ByVal nIDEvent As Long) As Long
+　　Public com1 As New MSCommLib.MSComm
+　　Public y0Stt As Boolean
+　　Public y0_on As Boolean
+　　Public tmrFlag As Boolean
+　　Public tmr As Long
+　　Sub runn()
+　　　　On Error GoTo ed
+　　　　com1.Settings = "9600,e,8,1"
+　　　　If com1.PortOpen = False Then
+　　　　　　com1.PortOpen = True
+　　　　End If
+　　　　tmr = SetTimer(0, 0, 500, AddressOf ontimer)
+　　　　Exit Sub
+　　ed:
+　　MsgBox "串口打开错误！"
+　　End Sub
+　　Sub stopp()
+　　　　If com1.PortOpen = True Then
+　　　　　　com1.PortOpen = False
+　　　　　　KillTimer 0, tmr
+　　　　End If
+　　End Sub
+　　Public Function ontimer()　
+　　Dim a(7) As Byte
+　　Dim add As Long
+　　On Error GoTo ed
+　　If tmrFlag = False Then
+　　　　tmrFlag = True
+　　　　If y0_on = True Then
+　　　　　　y0_on = False
+　　　　　　If y0Stt = True Then
+　　　　　　a(0) = &H1
+　　　　　　a(1) = &H5
+　　　　　　a(2) = &H0
+　　　　　　a(3) = &H0
+　　　　　　a(4) = &HFF
+　　　　　　a(5) = &H0
+　　　　　　a(6) = &H8C
+　　　　　　a(7) = &H3A
+　　　　　　com1.Output = a
+　　　　　　add = 0
+　　　　　　Do
+　　　　　　　　DoEvents
+　　　　　　　　Sleep 10
+　　　　　　　　add = add + 1
+　　　　　　　　If add >= 100 Then
+　　　　　　　　　　Exit Do
+　　　　　　　　End If
+　　　　　　Loop Until com1.InBufferCount >= 8
+　　　　　　Else
+　　　　　　a(0) = &H1
+　　　　　　a(1) = &H5
+　　　　　　a(2) = &H0
+　　　　　　a(3) = &H0
+　　　　　　a(4) = &H0
+　　　　　　a(5) = &H0
+　　　　　　a(6) = &HCD
+　　　　　　a(7) = &HCA
+　　　　　　com1.Output = a
+　　　　　　add = 0
+　　　　　　Do
+　　　　　　　　DoEvents
+　　　　　　　　Sleep 10
+　　　　　　　　add = add + 1
+　　　　　　　　If add >= 100 Then
+　　　　　　　　　　Exit Do
+　　　　　　　　End If
+　　　　　　Loop Until com1.InBufferCount >= 8
+　　　　　　End If
+　　　　End If
+　　End If
+　　tmrFlag = False
+　　Exit Function
+　　ed: MsgBox "串口错误！"
+　　tmrFlag = False
+　　End Function
+
+
+　　界面程序：
+　　Private Sub cmd1_Click()
+　　y0_on = True
+　　y0Stt = Not y0Stt
+　　End Sub
+　　Private Sub cmdRun_Click()
+　　runn
+　　CheckBox1.Value = 1
+　　End Sub
+　　Private Sub cmdStop_Click()
+　　stopp
+　　CheckBox1.Value = 0
+　　End Sub
+
+
+4 结束语
+　　由上可见，VBA已经广泛应用于微软的应用软件当中，所以为更好的完善二次开发功能，众多的组态软件都在VBA支持上做了努力，世纪星组态软件开发语言已与VBA非常相似，相信在未来的版本中，世纪星将全面支持VBA，它的二次开发功能会迈上一个新的台阶。
