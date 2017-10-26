@@ -1,7 +1,39 @@
+/*
+   find 高级参数
+*/
 
-使用stty設定baudrate
-我使用busybox的stty
+//一次查找多个指定文件:
+find . -name "a.html"  -name "b.html" 
+find . -regex '.*\.txt\|.*\.doc\|.*\.mp3'
 
+//排除目录下所有以html结尾的文件：
+find . -type f ! -name "*.html"  
+
+//排除多种文件类型的：
+find . -type f ! -name "*.html" -type  f ! -name "*.php" -type  f ! -name "*.svn-base"  -type  f ! -name "*.js"  -type  f ! -name "*.gif"  -type  f ! -name "*.png"  -type  f ! -name "*.cpp"  -type  f ! -name "*.h"  -type  f ! -name "*.o"  -type  f ! -name "*.jpg"  -type  f ! -name "*.so"  -type  f ! -name "*.bak"  -type  f ! -name "*.log"   
+
+
+//在 grep 中匹配多个关键字
+grep查找多个数字的文件：  -r 递归，-E：正则  -l：只显示文件名
+grep -r -E '0341028|100081|10086|10001' *  
+a.txt:100081  
+b.txt:10086  
+c/cc.txt:0341028  
+c/cc.txt:100081  
+c/cc.txt:10086  
+c/cc.txt:10001  
+c.txt:10001  
+d.txt:0341028  
+
+grep -r  -E -l '0341028|100081|10086|10001' *     
+a.txt  
+b.txt  
+c/cc.txt  
+c.txt  
+d.txt
+
+
+使用busybox 的 stty設定baudrate
 ./busybox stty -F /dev/ttymxc1 115200
 
 
