@@ -1,7 +1,35 @@
+repo 获取各个库的tag代码
+项目发布版本之后，需要备份，git管理中使用tag跟踪，在repo管理的多个库中。
+直接上干货，使用如下方法：
+
+
+0、所有repo管理的git库都会退到某一个tag版本上:
+repo forall -c git checkout <tag_name>
+
+
+1、创建各个库的tag
+repo forall -c git tag tag_V1.3
+repo forall -c git push origin --tags
+
+
+2、创建Manifest库tag
+git checkout -b tag_V1.3
+修改default.xml:
+revision="refs/tags/tag_V1.3"
+git add default.xml
+git commit -m "release V1.3"
+
+
+3、需要下载tag代码时，下载代码
+repo init -u git@url_Manifest.git -b refs/tags/tag_V1.3
+repo sync
+repo start tag_V1.3
+
+---------------------------------------------------------------------------------------------------
 /*
    find 高级参数
 */
-
+---------------------------------------------------------------------------------------------------
 //一次查找多个指定文件:
 find . -name "a.html"  -name "b.html" 
 find . -regex '.*\.txt\|.*\.doc\|.*\.mp3'
@@ -32,11 +60,12 @@ c/cc.txt
 c.txt  
 d.txt
 
+//递归删除
+find . -name "*.o"  | xargs rm -f
+---------------------------------------------------------------------------------------
 
 使用busybox 的 stty設定baudrate
 ./busybox stty -F /dev/ttymxc1 115200
-
-
 
 //shell
 read X < /dev/imx117
@@ -54,7 +83,7 @@ http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
 
 ==========================================================================================================
 如何使用git工具向github提交代码:
-
+==========================================================================================================
 1.首先需要克隆线上的库:   git clone https://github.com/shiguanghu/mini2440_assembler_c_programs.git
 2.进入克隆好的目录,开始肆无忌惮的创建
 3.开始提交: 
@@ -70,11 +99,8 @@ http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
 	//提交到远程
 	git push -u origin master
 ==========================================================================================================
-//递归删除
-find . -name "*.o"  | xargs rm -f
----------------------------------------------------------------------------------------
  利用ssh传输文件
-
+==========================================================================================================
 在linux下一般用scp这个命令来通过ssh传输文件。
 
 1、从服务器上下载文件
@@ -87,8 +113,6 @@ scp /path/filename username@servername:/path
 
 例如scp /var/www/test.php  root@192.168.0.101:/var/www/  把本机/var/www/目录下的test.php文件上传到192.168.0.101这台服务器上的/var/www/目录中
 
- 
-
 3、从服务器下载整个目录
 scp -r username@servername:/var/www/remote_dir/（远程目录） /var/www/local_dir（本地目录）
 
@@ -99,9 +123,10 @@ scp  -r local_dir username@servername:remote_dir
 例如：scp -r test  root@192.168.0.101:/var/www/   把当前目录下的test目录上传到服务器的/var/www/ 目录
 
 注：目标服务器要开启写入权限。
+
 ---------------------------------------------------------------------------------------
+modprobe(module probe)
 ---------------------------------------------------------------------------------------
- modprobe(module probe)
 功能说明：自动处理可载入模块。
 
 语　　法：modprobe [-acdlrtvV][--help][模块文件][符号名称 = 符号值]
