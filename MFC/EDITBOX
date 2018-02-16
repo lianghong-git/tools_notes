@@ -5,7 +5,7 @@ pEdit->SetSel(1, 10, false);
 pEdit->SetFocus();
 
 CFont m_Font;
-m_Font.CreateFont(0,0,0,0,100,FALSE,FALSE,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,FF_SWISS,"Arial");
+m_Font.CreateFont(-60,0,0,0,100,FALSE,FALSE,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,FF_SWISS,"Arial");
 
 pEdit->SetFont(&m_Font);
 m_Font.Detach();
