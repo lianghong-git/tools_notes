@@ -9,3 +9,34 @@ m_Font.CreateFont(0,0,0,0,100,FALSE,FALSE,0,ANSI_CHARSET,OUT_DEFAULT_PRECIS,CLIP
 
 pEdit->SetFont(&m_Font);
 m_Font.Detach();
+
+
+
+
+//
+设置字体
+函数原型:
+     BOOL CreateFont( int nHeight, int nWidth, int nEscapement, int nOrientation, int nWeight, BYTE bItalic, BYTE bUnderline, BYTE cStrikeOut, BYTE nCharSet, BYTE nOutPrecision, BYTE nClipPrecision, BYTE nQuality, BYTE nPitchAndFamily, LPCTSTR lpszFacename );
+
+     参数说明:
+     nHeight            :字体高度. 三中情况 1、>0:字体的高度值（设备坐标）;2、=0:字体采用缺省值. 3、<0:此值的绝对值为高度.
+     nWidth             :字体宽度.
+     nEscapement        :文本行的倾斜度.
+     nOrientation       :字符基线的倾斜度.
+     nWeight            :字体的粗细.如下:
+       .FW_DONTCARE
+       .FW_THIN
+       .FW_EXTRALIGHT
+        .....
+     bItalic            :字体是否为斜体
+     bUnderline         :字体是否带下划线
+     cStrikeOut         :字体是否带删除线
+     nCharSet           :字体的字符集
+       .ANSI_CHARSET
+       .DEFAULT_CHARSET
+       .SYMBOL_CHARSET.....
+     nOutPrecision      :字符的输出精度
+     nClipPrecision     :字符裁剪的精度
+     nQuality           :字符的输出质量
+     nPitchAndFamily :字符间距和字体族(低位说明间距,高位说明字符族)
+     lpszFacename       :字体名称
