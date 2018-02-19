@@ -1,0 +1,12 @@
+    CStringArray strs;
+    strs.Add(_T("one"));
+    strs.Add(_T("two"));
+    strs.Add(_T("three"));
+
+    StringVector copy;
+
+    for (int n = 0; n < strs.GetCount(); n++)
+    {
+        const CString& s = strs.GetAt(n);
+        copy.push_back(string(s));
+    }
