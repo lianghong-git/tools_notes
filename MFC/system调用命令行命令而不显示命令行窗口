@@ -1,0 +1,62 @@
+system调用命令行命令，而不显示命令行窗口
+
+通常用system调用命令行命令时都会弹出黑底白字的命令行窗口,下面的代码可以不显示弹出的命令行窗口。
+
+代码如下
+
+view plain
+#pragma comment( linker, "/subsystem:/"windows/" /entry:/"mainCRTStartup/"" ) // 设置入口地址  
+#include   <windows.h>     
+#include   <stdio.h>     
+  
+#define   COMMENDLINE   "ping 127.0.0.1"  
+  
+//调用命令行命令而不显示命令行窗口  
+BOOL system_hide(char* CommandLine)     
+{     
+    SECURITY_ATTRIBUTES   sa;     
+    HANDLE   hRead,hWrite;     
+  
+    sa.nLength   =   sizeof(SECURITY_ATTRIBUTES);     
+    sa.lpSecurityDescriptor   =   NULL;     
+    sa.bInheritHandle   =   TRUE;     
+    if   (!CreatePipe(&hRead,&hWrite,&sa,0))       
+    {     
+        return   FALSE;     
+    }       
+  
+    STARTUPINFO   si;     
+    PROCESS_INFORMATION   pi;       
+    si.cb   =   sizeof(STARTUPINFO);     
+    GetStartupInfo(&si);       
+    si.hStdError   =   hWrite;     
+    si.hStdOutput   =   hWrite;     
+    si.wShowWindow   =   SW_HIDE;     
+    si.dwFlags   =   STARTF_USESHOWWINDOW   |   STARTF_USESTDHANDLES;     
+    //关键步骤，CreateProcess函数参数意义请查阅MSDN     
+    if   (!CreateProcess(NULL, CommandLine, NULL,NULL,TRUE,NULL,NULL,NULL,&si,&pi))       
+    {     
+        return   FALSE;     
+    }     
+    CloseHandle(hWrite);     
+  
+    char   buffer[4096]   =   {0};     
+    DWORD   bytesRead;       
+    while(true)       
+    {     
+        memset(buffer,0,strlen(buffer));  
+        if(ReadFile(hRead,buffer,4095,&bytesRead,NULL)==NULL)     
+            break;     
+        //buffer中就是执行的结果，可以保存到文本，也可以直接输出     
+        //printf(buffer);//这行注释掉就可以了     
+        Sleep(100);       
+    }       
+    return   TRUE;     
+}     
+  
+int main(int argc, char* argv[])     
+{     
+    system_hide(COMMENDLINE);//不显示命令窗口  
+    //system(COMMENDLINE);//显示命令行窗口  
+    return 0;     
+}  
