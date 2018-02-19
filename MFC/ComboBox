@@ -1,0 +1,14 @@
+//添加选项
+( (CComboBox *)GetDlgItem(IDC_COMBO1) ) -> AddString(_T("选项1"));
+
+
+
+
+3、从控件得到选定的Item
+假设在控件列表中已经选定某项，现在要得到被选定项的内容，首先要得到该项的位置，然后得到对应位置的内容。
+这里会用到两个函数，如：
+int nIndex = m_cbExample.GetCurSel();
+CString strCBText;
+m_cbExample.GetLBText( nIndex, strCBText);
+这样，得到的内容就保存在 strCBText 中。
+若要选取当前内容，可调用函数GetWindowText(strCBText)。
