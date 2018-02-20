@@ -41,3 +41,50 @@ MFC中如何将16进制字符转化成10进制，包括CString与char*的转换
 4 char *p= (char*)((LPCTSTR)m_str); //将CString的字符m_str转化成char*型，并赋值给指针p
 5 char *str;
 6 int m_Speed = (int)strtol(p, &str, 16); //十六进制转化成10进制，并赋值给整形数据m_Speed
+
+
+/////////////////////////////////////////////////////////
+16進数表記の文字列をlong型の数値に変換する
+「0x0123」や「0FFF」のように16進数で書かれた文字列を数値に変換するにはstrtol系の関数が利用できる。
+従来通りに1文字ずつ判別しながら数値に変換してもいいが、この関数を利用すればかなり楽ができる。
+
+bool	Test()
+{
+	////////////////////////////////
+	//	16進数表記の文字列をlong型の数値に変換
+	////////////////////////////////
+	{
+		//char型文字列から変換
+		long	nValue;
+		char	pszText[] = "0ab3";
+		char*	pszEnd;
+
+		nValue = ::strtol(pszText,&pszEnd,16);
+	}
+	{
+		//wchar_t型文字列から変換
+		long		nValue;
+		wchar_t		pszText[] = L"0ab3";
+		wchar_t*	pszEnd;
+
+		nValue = ::wcstol(pszText,&pszEnd,16);
+	}
+	{
+		//TCHAR型文字列から変換
+		long	nValue;
+		TCHAR	pszText[] = _T("0ab3");
+		TCHAR*	pszEnd;
+
+		nValue = ::_tcstol(pszText,&pszEnd,16);
+	}
+	{
+		//CString型文字列から変換
+		long	nValue;
+		CString	strText = _T("0ab3");
+		TCHAR*	pszEnd;
+
+		nValue = ::_tcstol(strText,&pszEnd,16);
+	}
+
+	return	true;
+}
