@@ -10,3 +10,23 @@
         const CString& s = strs.GetAt(n);
         copy.push_back(string(s));
     }
+
+
+//////////////////////////////////////
+去掉CString中的某些特定字符用Remove方法
+
+例：
+CString str="leng!quan!!!!!";
+str.Remove('!');    //这样就可以去掉str字符串中的叹号。
+
+去掉CString左边的特定字符用TrimLeft
+例：
+CString str="!!!!!lengquan!!quan!!";
+str.TrimLeft('!');  //这里只有左边的！被去掉了。
+
+去掉CString右边的特定字符用TrimRight
+str.TrimRight('!');
+
+以上方法也可以去除一小段字符串如：
+CString str="lengquan!$%@^!^#";
+str.TrimRight("!$%@^!^#");     //这样就去掉了!$%@^!^#这个字符段
