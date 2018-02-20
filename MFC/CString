@@ -30,3 +30,14 @@ str.TrimRight('!');
 以上方法也可以去除一小段字符串如：
 CString str="lengquan!$%@^!^#";
 str.TrimRight("!$%@^!^#");     //这样就去掉了!$%@^!^#这个字符段
+
+
+
+//////////////////////////////////////////////////
+MFC中如何将16进制字符转化成10进制，包括CString与char*的转换
+1 CString m_str;
+2 m_str="1F"; //16进制字符为1F
+3 m_str = "0x"+m_str;
+4 char *p= (char*)((LPCTSTR)m_str); //将CString的字符m_str转化成char*型，并赋值给指针p
+5 char *str;
+6 int m_Speed = (int)strtol(p, &str, 16); //十六进制转化成10进制，并赋值给整形数据m_Speed
