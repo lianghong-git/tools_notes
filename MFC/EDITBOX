@@ -40,3 +40,20 @@ m_Font.Detach();
      nQuality           :字符的输出质量
      nPitchAndFamily :字符间距和字体族(低位说明间距,高位说明字符族)
      lpszFacename       :字体名称
+
+
+//////////////////////////////////////////////
+ MFC的editbox内容获取
+//////////////////////////////////////////////
+方法一
+int temp;
+temp = GetDlgItemInt(IDC_EDIT1);
+SetDlgItemInt(IDC_EDIT2,temp);
+如果是字符串则用 GetDlgItemText(IDC_EDIT1，str); 和SetDlgItemText
+
+方法二
+设置控制变量 m_a,m_b
+CString strText = "asdf";
+m_a.GetWindowText(strText);
+m_b.SetWindowText(strText);
+好像只能针对字符串
