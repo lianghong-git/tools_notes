@@ -79,7 +79,9 @@ ibus-daemon -drx
 http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
 
 
-
+//shell
+# Write binary 1, 2 and 3
+echo -ne "\x01\x02\x03" > /dev/spidev3.0
 
 ==========================================================================================================
 如何使用git工具向github提交代码:
@@ -177,188 +179,10 @@ $modprobe -l
       -v或--verbose 　执行时显示详细的信息。 
       -V或--version 　显示版本信息。 
       -help 　显示帮助。 
----------------------------------------------------------------------------------------
-//SONY环境配置教程
-https://wiki.sonyericsson.net/androiki/Setup_Your_Develop_Environment
-
-////////////////////////////////////////////////////////////////////
-//配置git，用Repo脚本同步代码
-////////////////////////////////////////////////////////////////////
-1.	ssh-keygen
-2.	cd .ssh/
-3.	cat id_rsa.pub
-3.1.	ssh-add	//新生成的ssh密钥，可能并不能立刻被PC所找到，所以需要执行以下命令，把新密钥添加到ssh-agent的高速缓存中?
-4.	このFileの中身を　http://review.sonyericsson.net/#/settings/ssh-keys　に　Add　Key　にいれる。
-5.	ssh guanghu.xa.shi@review.sonyericsson.net -p 29418		//上記Fileの中身を入れないと、Permission denied (publickey)Errorが出る.
-6.	ssh guanghu.xa.shi@android-jpto.sonyericsson.net -p 29418	//公钥被推送到服务器后，可通过ssh命令进行验证.入力すると、下記が提示されるので、確認だけ
-									（有时需要很长时间，才能进行此验证）
-ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-  ****    Welcome to Gerrit Code Review    ****
-
-  Hi Guanghu Shi, you have successfully connected over SSH.
-
-  Unfortunately, interactive shells are disabled.
-  To clone a hosted Git repository, use:
-
-  git clone ssh://guanghu.xa.shi@review.sonyericsson.net:29418/REPOSITORY_NAME.git
-
-Connection to review.sonyericsson.net closed.
-ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-
-
-//配置git
-git config --global user.email guanghu.xa.shi@sonymobile.com
-git config --global user.name "guanghu.xa.shi"
-cat ~/.gitconfig
-git config --global url.ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/.insteadOf git://review.sonyericsson.net/
-git config --global --add url.ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/.insteadOf git://android.git.kernel.org/
-git config --global --add url.ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/.insteadOf https://android.googlesource.com/
-git config --global --add url.ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/tools/repo.insteadOf https://gerrit.googlesource.com/git-repo
-git config --global --add url.ssh://guanghu.xa.shi@review.sonyericsson.net:29418/.pushInsteadOf git://review.sonyericsson.net/
-gedit ~/.gitconfig   看看git配置内容正确否。
-
---------------------------------------------------------------------------------
-[user]
-	email = guanghu.xa.shi@sonymobile.com
-	name = guanghu.xa.shi
-[core]
-	editor = vim -c \"set fenc=utf-8\"
-	whitespace = trailing-space,space-before-tab,tab-in-indent
-[url "ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/"]
-	insteadOf = git://review.sonyericsson.net/
-	insteadOf = git://android.git.kernel.org/
-	insteadOf = https://android.googlesource.com/
-[url "ssh://guanghu.xa.shi@android-jpto.sonyericsson.net:29418/tools/repo"]
-	insteadOf = https://gerrit.googlesource.com/git-repo
-[url "ssh://guanghu.xa.shi@review.sonyericsson.net:29418/"]
-	pushInsteadOf = git://review.sonyericsson.net/
-[color]
-	ui = auto
----------------------------------------------------------------------------------------------------
-//用Repo脚本同步代码(交叉编译器也一同被下载)
-mkdir m-tone 	    //
-cd m-tone/		    //
-repo init -u git://review.sonyericsson.net/platform/manifest.git -b m-8996-ref 	 	//高通原生代码
-repo init -u git://review.sonyericsson.net/platform/manifest.git -b m-tone	 	    //m_tone-cdb,  m_tone-dora
-repo init -u git://review.sonyericsson.net/platform/manifest.git -b loire_cdb	 	//m-loire_cdb, m-loire_suzu
-repo init -u git://review.sonyericsson.net/platform/manifest.git -b m-loire-qref 	//m-loire-qref
-repo init -u git://review.sonyericsson.net/platform/manifest.git -b feature-camera-171h-loire2-bu-dev   //ps11
-repo sync -j64 	 //-jXX 根据自己PC硬件配置来
-
-或者：
-repo sync -j64 &&　source build/envsetup.sh　&& lunch tone_cdb-userdebug && make fullbuild -j32
-
-repo sync kernel 则只是同步kernel目录下的代码
-
-//feature-camera-171h-loire2-bu-dev
-■Branch
-http://confluence.jpto.sonyericsson.net/v1/display/CAMSOFT/%5B171H%5D+Branch+Strategy
-feature-camera-171h-loire2-bu-dev
- |
- +-- kernel:    feature-camera-171h-loire2-bu-dev
- |
- +-- caladbolg: feature-camera-171h-bu-dev
- |
- +-- camera-mw: feature-camera-171h-bu-dev
- 
-
-//超快sync
-http://android-ci.jpto.sonyericsson.net/job/campfbld/
-
-//jenkins
-http://android-ci.jpto.sonyericsson.net/job/22714183sync/   //
-http://android-ci.jpto.sonyericsson.net/job/22714183fs/     //Dalian
-http://android-ci.jpto.sonyericsson.net/job/campftest/      //
-http://android-ci.jpto.sonyericsson.net/job/22714183acq/    //
-http://android-ci.jpto.sonyericsson.net/job/GerritEvent     //
-
-//查版本
-http://cmweb.sonyericsson.net/
-
-//redmine
-https://t21g.mydns.jp/redmine/
-
-//gerrit event
-http://android-ci-platform.sonyericsson.net/job/kernel-checkpatch/configure
-
-//syncRobot gerrit
-http://review.sonyericsson.net/#/c/743155
-
-
-
-//////////////////////////////////////////////////////////////////// 
-//配置，编译文件系统Android，和Linux内核
-////////////////////////////////////////////////////////////////////
-//配置-包含进来几个.sh文件
-source build/envsetup.sh
-//配置---选某一版本
-lunch                    //列出可选的版本
-lunch tone_cdb-userdebug //
-lunch dora-userdebug     //比如选择了这个版本
-
-make fullbuild -j64	    //
 
 //
-如果改了target，要先make clean（distclean）一下，否则编译最后会出错。很浪费时间。
-//
-make modules SUBDIRS=drivers/usb/gadget/
-//.ko が移動される、　Defaultでは　FileSystem　のsystem/lib/modules/の中に移動している
-/out/target/product/tone_cdb/system/lib/modules/spidev.ko
-
-
-///////////////////////////////////////////////////////////////////////////
-//单独编译kernel
-//这个只编译出kernel.sin，用FG4直接烧写kernel.sin即可
-///////////////////////////////////////////////////////////////////////////
 test -n "$OUT" && find $OUT \( -name \*.img -o -name \*.dtb -o -name \*.dat \) -exec rm -rf {} \;	//删除*.img *.dtb *.dat。在root目录执行
-make -j64 out/target/product/tone_cdb/kernel.sin    //在kernel目录之外执行
 
-//
-"make mrproper" 必须进内核目录里执行。
-
-///////////////////////////////////////////////////////////////////////////
-//单独编译gtest目录 /vendor/semc/system/camera-mw/test
-///////////////////////////////////////////////////////////////////////////
-在gtest目录单独 mm -b -j32 方式编译时, 出 "No private recovery resources for TARGET_DEVICE tone_cdb" 之类错误:
-方法1： 到root目录重新 source build/envsetup.sh ---> lunch tone_cdb-userdebug ... 一下。
-方法2： 用编译内核的同一个终端。
-
-///////////////////////////////////////////////////////////////////////////////////
-//单独编译gtest目录（编译整个系统时，貌似不编译此部分？），用adb工具 放进android FileSystem里
-///////////////////////////////////////////////////////////////////////////////////
-mm -b -j32			    //在test目录(/vendor/semc/system/camera-mw/test)里执行。
-					    //在根目录 make clean 之类之后，mm命令就不好使了，要再make fullbuild以下才好使。
-					    //
-adb root				//
-(直接 adb remount ？)	//restarting adbd as root
-adb disable-verity		//防止 Read Only Filesystem?
-					    //Verity disabled on /system
-					    //Now reboot your device for settings to take effect
-adb reboot				//或手动重启？
-adb root				//
-adb remount				//
-					    //Not running as root. Try "adb root" first.
-			    
-adb push ${OUT}/system/lib/libcammw.so /system/lib/         //1
-adb push ${OUT}/system/lib/libcammw_util.so /system/lib     //2
-adb push ${OUT}/system/lib/libcammw_test.so /system/lib     //3
-adb push ${OUT}/system/bin/libcammw_gtest /system/bin       //4
-
-adb shell				//进入手机终端    
-libcammw_gtest -t 0001	//跑 Gtest，指定case。root权限执行。
-adb shell libcammw_gtest -p -t 0001
-
-
-//rm RAW File: 
-adb shell rm /data/misc/camera/*.raw 
-
-//
-adb shell libcammw_gtest -p -t 0100                         //
-adb shell libcammw_gtest -p -t 4100                         //
-
-//Get raw File
-adb pull /data/misc/camera/ .
-adb pull /data/misc/camera/ /home/CORPUSERS/xp019530/Downloads/Log/0714/test2/
 
 //拷贝整个文件夹失败时，用此方法：
 adb pull "/storage/emulated/legacy/DCIM/Camera/" /home/shi/下载/ov5640_captures/
@@ -460,38 +284,27 @@ response(32, 33):  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0
 read(32, 32):      00 00, 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00		//32byte
 
 
-//shell
-# Write binary 1, 2 and 3
-echo -ne "\x01\x02\x03" > /dev/spidev3.0
+
 
 cat /proc/cpuinfo 
 cat /proc/interrupt
 
-dmesg | grep spi
 
 /////////////////////////////////////////////////////////////
-//Git操作代码
-/////////////////////////////////////////////////////////////
-//提交代码
 git status		//看一下更改记录
 git clean -		//删掉临时文件
 git diff		//看一下是不是我向要的更改内容
 git add . 		//当前目录的所有
 git add 某文件 	//只提交某文件
-git commit -a	//提交到PC本地仓库
+git commit -a	  //提交到PC本地仓库
 (git commit --amend --no-edit)
-git push -v $(git config --get remote.origin.url) HEAD:refs/for/m-common		    //caladblog
-git push -v $(git config --get remote.origin.url) HEAD:refs/for/feature-m-aegis-dev	//cammw
-git push -v $(git config --get remote.origin.url) HEAD:refs/for/m-tone			    //kernel
+git push -v $(git config --get remote.origin.url) HEAD:refs/for/m-common		//
+git push -v $(git config --get remote.origin.url) HEAD:refs/for/feature-m-aegis-dev	//
+git push -v $(git config --get remote.origin.url) HEAD:refs/for/m-tone			//kernel
 
-//恢复kernel代码
-1.进kernel目录
-2.git log --oneline　-8
-3.找到想要恢复的 git号码
-4. git reset --hard 号码 //git reset --hard 68246e24
 
 //查某提交Change-Id：　Gerrit上搜索某提交时，也是根据Change-Id来查的
-git log -10
+
 
 //patch形式　!=　commit形式
 git cherry-pick -n ad56462      //patch形式(只拿下内容)
@@ -503,7 +316,7 @@ make -j64 systemimage	//FileSystem
 make -j64			    //
 
 
-//1.先烧写一个能启动的 bootloader，kernel，rootFileSystem (用FG4之类)
+//1.先烧写一个能启动的 bootloader，kernel，rootFileSystem
 //2.adb命令进入fastboot模式（USB口，非UART口）
 adb reboot-bootloader			    //Board会重起，貌似进入fastboot模式？
 
@@ -519,7 +332,7 @@ fastboot reboot				        //
 $ make bootimage -j16
 $ adb reboot bootloader
 $ cd out/host/linux-x86/bin/
-$ ./fastboot flash boot ../../../target/product/tone_cdb/boot.img
+$ ./fastboot flash boot ../../../target/product/xxxxx/boot.img
 $ ./fastboot reboot
 ------------
 
@@ -537,7 +350,6 @@ Qualcomm DTS 学习:
 
 //
 git show | perl ./scripts/checkpatch.pl --no-signoff -          //
-perl ./scripts/checkpatch.pl --no-signoff drivers/media/platform/msm/camera_v2/sensor/sony_camera_v4l2.c    //
 perl ./scripts/checkpatch.pl --no-signoff drivers/media/platform/msm/camera_v2/sensor/*.c                   */
 perl ./scripts/checkpatch.pl --no-signoff drivers/media/platform/msm/camera_v2/sensor/*.h                   */
 
@@ -547,8 +359,7 @@ scripts/dtc/dtc –I dts –O dtb –o devicetree.dtb arch/arm/boot/dts/zynq-zed
 //scp
 scp 1.txt 22714384@jptolx23365:/home/CORPUSERS/22714384/work/
 
-//
-xp019530@jptolx24412:~/Documents/Projects/m-tone_cdb$ adb shell getevent
+//adb shell getevent
 add device 1: /dev/input/event7		name:     "msm8996-tasha-mtp-snd-card Button Jack"
 add device 2: /dev/input/event6		name:     "msm8996-tasha-mtp-snd-card Headset Jack"
 add device 3: /dev/input/event5		name:     "clearpad"			//TouchScreen
@@ -727,7 +538,7 @@ androidboot.baseband=msm
 
 
 
-//MSM Exception(IRQ) Sequence:
+//MSM Exception(IRQ) Sequence?
 gic_handle_irq
 	__handle_domain_irq
 		generic_handle_irq
@@ -736,30 +547,8 @@ gic_handle_irq
 					handle_edge_irq
 						handle_irq_event
 							handle_irq_event_percpu
-								sony_aube_irq_handler ~ 				
-							
-//						
-[  116.923820] [<ffffffc0002ecf3c>] kmem_cache_destroy+0x58/0xc0
-[  116.929529] [<ffffffc0008d6048>] sony_aube_config32+0x204/0x440
-[  116.935434] [<ffffffc0008d2938>] msm_sensor_subdev_ioctl+0x10c/0x204
-[  116.941784] [<ffffffc0008d2c04>] msm_sensor_subdev_do_ioctl+0x1d4/0x200
-[  116.948359] [<ffffffc000861e10>] video_usercopy+0x2d0/0x524
-[  116.953935] [<ffffffc0008d22f8>] msm_sensor_subdev_fops_ioctl+0x10/0x1c
-[  116.960559] [<ffffffc00086e234>] v4l2_compat_ioctl32+0x98/0xb4
-[  116.966316] [<ffffffc00035ebb4>] compat_SyS_ioctl+0x10c/0x1210
+								xxx_device_irq_handler ~ 				
 
-
-//
-xp019530@jptolx24412:/sys/bus/usb/devices$ lsusb
-Bus 002 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 001 Device 002: ID 8087:0024 Intel Corp. Integrated Rate Matching Hub
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 003 Device 058: ID 0fce:51e1 Sony Ericsson Mobile Communications AB         //每次都是变的。
-Bus 003 Device 056: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)
-Bus 003 Device 057: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
-Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 			
 //关闭usb端口供电	
 echo suspend > /sys/bus/usb/devices/usb1/power/level
@@ -820,8 +609,6 @@ $ sudo apt-get install nscd
 $ make bootimage -j16
 $ adb reboot bootloader
 $ cd out/host/linux-x86/bin/
-$ ./fastboot flash boot ../../../target/product/tone_cdb/boot.img
+$ ./fastboot flash boot ../../../target/product/xxx/boot.img
 $ ./fastboot reboot
 
-//
-fg4console -U -sd 4 -p "Tone-cdb@Tone cdb BROWN - BROWN CID1" -d $OUT/obj/semcpkgtoimg
