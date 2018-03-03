@@ -78,6 +78,13 @@ ibus-daemon -drx
 //OV5640 On Tiny4412
 http://wiki.friendlyarm.com/wiki/index.php/Matrix_-_CAM500A/zh
 
+//Tiny4412 + Ubuntu16.04 
+安装arm-linux-gcc交叉工具链,
+解决bash: /opt/FriendlyARM/toolschain/4.5.1/bin/arm-linux-gcc: 没有那个文件或目录
+    sudo apt-getinstall lsb-core
+arm-liux-gcc -v 显示版本就OK.
+
+
 
 //shell
 # Write binary 1, 2 and 3
