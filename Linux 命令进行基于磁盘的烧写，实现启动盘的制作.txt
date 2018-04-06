@@ -1,0 +1,63 @@
+SD-Flasher.exe用于制作 Tiny4412 的SD启动盘.实际上，也可以使用 Linux 命令进行基于磁盘的烧写，实现启动盘的制作.
+
+
+具体步骤如下(我使用的开发板是 Tiny 4412)：
+
+
+-----------------------------------------------------------
+1. 首先删除分区表内容
+-----------------------------------------------------------
+sudo dd if=/dev/zero of=/dev/sdb bs=512 count=1
+
+
+-----------------------------------------------------------
+2. 新建分区，预留前面的130M空白区，在其后面新建分区
+-----------------------------------------------------------
+sudo fdisk /dev/sdb
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+      e   extended
+      Select (default p): p
+      Partition number (1-4, default 1):
+      Using default value 1
+      First sector (2048-15523839, default 2048): 268288
+      Last sector, +sectors or +size{K,M,G} (268288-15523839, default 15523839):
+      Using default value 15523839
+
+      Command (m for help): t
+      Selected partition 1
+      Hex code (type L to list codes): b
+      Changed system type of partition 1 to b (W95 FAT32)
+
+      Command (m for help): w
+      The partition table has been altered!
+
+-----------------------------------------------------------
+3. 格式化分区
+-----------------------------------------------------------
+sudo mkfs.vfat /dev/sdb1
+
+-----------------------------------------------------------
+4. 在第二扇区开始烧写 Superboot 内容
+-----------------------------------------------------------
+sudo dd iflag=dsync oflag=dsync if=Superboot210.bin of=/dev/sdb seek=1
+sync
+
+-----------------------------------------------------------
+5. 根据 Tiny4412 文档的描述， 拷贝FriendlyARM.ini, Kernel File 到 images 文件夹内
+-----------------------------------------------------------
+sudo mount /dev/sdb1 /mnt/tmp
+sudo mkdir /mnt/tmp/images
+
+sudo cp FriendlyARM.ini /mnt/tmp/images
+sudo cp zImage /mnt/tmp/images
+
+-----------------------------------------------------------
+6. 如果需要使用USB下载的话，则修改 FriendlyARM.ini 内容，增加如下一行:
+-----------------------------------------------------------
+USB-Mode = yes
+
+-----------------------------------------------------------
+7. 插入该 SD 卡到 Tiny4412 开发版上，可以实现通过 USB 下载image
+-----------------------------------------------------------
