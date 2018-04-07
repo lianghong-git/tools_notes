@@ -1,3 +1,9 @@
+
+//Repository
+https://github.com/shiguanghu/uboot_tiny4412.git
+
+
+
 README for FriendlyARM Tiny4412
 
 说明：本u-boot源代码由三星原厂提供，并由友善之臂修改移植，以适用于Tiny4412开发板平台。
