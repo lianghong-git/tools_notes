@@ -47,13 +47,17 @@ sudo dd iflag=dsync oflag=dsync if=Superboot210.bin of=/dev/sdb seek=1
 sync
 
 -----------------------------------------------------------
-5. 根据 Tiny4412 文档的描述， 拷贝FriendlyARM.ini, Kernel File 到 images 文件夹内
+5. 根据 Tiny4412 文档的描述， 拷贝FriendlyARM.ini, zImage... 到 images 文件夹内
 -----------------------------------------------------------
 sudo mount /dev/sdb1 /mnt/tmp
 sudo mkdir /mnt/tmp/images
 
 sudo cp FriendlyARM.ini /mnt/tmp/images
 sudo cp zImage /mnt/tmp/images
+
+//Options
+//将 ramdisk-u.img、system.img、userdata.img 以及 linux 内核 linux-x.x/arch/arm/boot/zImage 以及 Superboot4412.bin 拷贝
+//到SD卡images目录下
 
 -----------------------------------------------------------
 6. 如果需要使用USB下载的话，则修改 FriendlyARM.ini 内容，增加如下一行:
