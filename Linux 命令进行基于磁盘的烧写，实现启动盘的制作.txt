@@ -40,6 +40,8 @@ sudo mkfs.vfat /dev/sdb1
 
 -----------------------------------------------------------
 4. 在第二扇区开始烧写 Superboot 内容
+
+bootloader 是烧写在设备（即/dev/sdc）上的， 而不是烧写在分区（/dev/sdc1）上的。
 -----------------------------------------------------------
 sudo dd iflag=dsync oflag=dsync if=Superboot210.bin of=/dev/sdb seek=1
 sync
