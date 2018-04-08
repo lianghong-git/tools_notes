@@ -1,21 +1,33 @@
-/////////////////////////////////////////////////
+
+
+目录A：
+      1. Build uboot
+      2. 制作启动 Tiny4412 的SD卡
+      3. 使用SD卡启动 Tiny4412 并烧写Android
+      4. 使用SD卡启动 Android
+
+目录B：
+   （1）将u-boot下载到SD卡， 从SD卡启动u-boot
+   （2）用U-boot的 fdisk 命令查看设备的分区表信息
+   （3）用U-boot fdisk 命令格式化eMMC
+   （4）如果格式化eMMC提示如下错误
+   （5）Linux下DNW工具安装
+   （6）DNW下载好了，就可以把uboot烧写到emmc了
+      6.1 烧写bl1.bin
+      6.2 烧写bl2.bin
+      6.3 烧写u-boot.bin
+      6.4 烧写E4412_tzsw.bin
+      6.5 从emmc启动
+
+
+
+
+
+
+////////////////////////////
 //Tiny4412 Uboot Repository
-/////////////////////////////////////////////////
+////////////////////////////
 https://github.com/shiguanghu/uboot_tiny4412.git
-
-
-1. Build uboot
-2. 制作启动 Tiny4412 的SD卡
-3. 使用SD卡启动 Tiny4412 并烧写Android
-4. 使用SD卡启动 Android
-
-
-附加内容：
-烧写uboot到emmc
-
-
-
-
 
 README for FriendlyARM Tiny4412
 
@@ -97,10 +109,13 @@ b) 如果是使用S700，则需要在uboot上设置kernel命令行参数:
 
 
 
-附加内容：
+目录B：
 -----------------------------------------------------
 下载uboot到emmc
 -----------------------------------------------------
+怎么将uboot烧写到SD卡， 见https://github.com/shiguanghu/tools_notes/blob/master/Linux 命令进行基于磁盘的烧写，实现启动盘的制作.txt
+
+
 （1）将u-boot下载到SD卡， 从SD卡启动u-boot，可以看到如下信息：
                   OK
                   U-Boot 2010.12-00000-gd1851db (Apr 07 2018 - 16:39:24) for TINY4412
@@ -152,7 +167,7 @@ fdisk <-c> <device_num> [<sys. part size(MB)> <user data part size> <cache part 
             4           520          5593500         1066494          0x83 
          TINY4412 # 
 
-（3）格式化eMMC
+（3）用U-boot fdisk 命令格式化eMMC
 u-boot模式下, 输入如下指令来格式化eMMC设备。
 TINY4412 #fdisk -c 1 608 2057 520
 
@@ -302,7 +317,7 @@ TINY4412 #fdisk -c 1 608 2057 520
                   TINY4412 # mmc write 1 0xc0000000 0x30 0x21D
                   MMC write: dev # 1, block # 48, count 541 ... 541 blocks written: OK
 
-//6.3 烧写E4412_tzsw.bin
+//6.4 烧写E4412_tzsw.bin
               //
                   TINY4412 # dnw
                   OTG cable Connected!
