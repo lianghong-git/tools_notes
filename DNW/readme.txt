@@ -21,6 +21,9 @@
 		make编译成功生成driver文件后：
 		chmod 777 secbulk.ko
 		sudo insmod secbulk.ko 加载进系统。
+		
+		开机的时候不会自动加载.ko文件，这样每次都要先加载才可以使用， 所以将其加入开机脚本，使其得到自动加载,
+		编辑/etc/init.d/rc.local 在最后加上 insmod /所在路径/secbulk.ko
 
 2.Linux PC还要安装一个库：
 	sudo apt-get install libusb-dev
