@@ -417,3 +417,16 @@ b) 如果是使用S700，则需要在uboot上设置kernel命令行参数:
    setenv bootargs console=ttySAC0,115200n8 androidboot.console=ttySAC0 lcd=S700
    saveenv
    然后重启Tiny4412即可。
+
+
+
+一切烧写完毕之后， 卡死在：Uncompressing Linux... done, booting the kernel.
+
+有可能是 bootargs 传递参数不对，比如没有指明波特率，又或者 uboot 默认传递给内核的机器 ID 不是 tiny4412， 经过我的验证, 排除这俩问题。
+
+解决办法：
+  make menuconfig
+  进入 System Type
+      去掉配置项 Support TrustZone-enabled Trusted Execution Environment 再重新编译内核即可！
+
+  这个东西貌似是给 Superboot4412 是用的， uboot 并不支持！
