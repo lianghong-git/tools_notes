@@ -4,8 +4,9 @@
 // shiguanghu
 ////////////////////////////////////////////////////////////////
 
+0.解压 dnw_for_linux.zip， 有俩文件夹secbulk和dnw。
 
-//1.编译secbulk.c驱动文件：
+1.编译secbulk.c驱动文件：
 
 	 	secbulk.c文件更改： 当然要添加你的USB设备的 VID，PID。
 
