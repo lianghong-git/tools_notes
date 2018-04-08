@@ -135,10 +135,10 @@ b) 如果是使用S700，则需要在uboot上设置kernel命令行参数:
                   BL1 version:  N/A (TrustZone Enabled BSP)
 
 
-                  Checking Boot Mode ... SDMMC
+                  Checking Boot Mode ... SDMMC              //从SD卡启动
                   REVISION: 1.1
-                  MMC Device 0: 7580 MB
-                  MMC Device 1: 3728 MB
+                  MMC Device 0: 7580 MB                     //SD   注意，从什么启动了，什么就是0，另一个就是1
+                  MMC Device 1: 3728 MB                     //eMMC
                   MMC Device 2: N/A
                   *** Warning - using default environment
 
@@ -355,10 +355,10 @@ eMMC CLOSE Success.!!
 
    BL1 version:  N/A (TrustZone Enabled BSP)
 
-   Checking Boot Mode ... EMMC4.41              //从SD变成了EMMC
+   Checking Boot Mode ... EMMC4.41              //从SD变成了EMMC4.41
    REVISION: 1.1
-   MMC Device 0: 3728 MB
-   MMC Device 1: 7580 MB
+   MMC Device 0: 3728 MB                        //eMMC 变成了index 0. 
+   MMC Device 1: 7580 MB                        //SD 
    MMC Device 2: N/A
    *** Warning - using default environment
 
