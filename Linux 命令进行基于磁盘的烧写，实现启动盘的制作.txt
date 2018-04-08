@@ -1,3 +1,7 @@
+//////////////////////////////////////////////////
+//在LinuxPC， 烧写 Superboot.bin | uboot.bin 到SD卡的方法
+//////////////////////////////////////////////////
+
 SD-Flasher.exe用于制作 Tiny4412 的SD启动盘.实际上，也可以使用 Linux 命令进行基于磁盘的烧写，实现启动盘的制作.
 
 
@@ -39,11 +43,13 @@ Partition type:
 sudo mkfs.vfat /dev/sdb1
 
 -----------------------------------------------------------
-4. 在第二扇区开始烧写 Superboot 内容
+4. 在第二扇区开始烧写 Superboot.bin OR Uboot.bin 内容
 
 bootloader 是烧写在设备（即/dev/sdc）上的， 而不是烧写在分区（/dev/sdc1）上的。
 -----------------------------------------------------------
 sudo dd iflag=dsync oflag=dsync if=Superboot210.bin of=/dev/sdb seek=1
+sudo dd iflag=dsync oflag=dsync if=uboot.bin of=/dev/sdb seek=1
+
 sync
 
 -----------------------------------------------------------
