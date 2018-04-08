@@ -389,12 +389,12 @@ d) 进入fastboot模式，以烧写Android
 e) 烧写 Android（Kernel， Filesystem）到SD卡
    首先请准备好Android image， 包括: zImage, ramdisk-u.img, system.img
    
-   在PC端输入以下命令进行烧写:
-   fastboot flash kernel zImage           (烧写kernel)
+   用root权限， 在PC端输入以下命令进行烧写:
+   sudo fastboot flash kernel arch/arm/boot/zImage           (烧写kernel)
    
-fastboot -w                               (格式化userdata和cache)
-fastboot flash ramdisk ramdisk-u.img      (烧写ramdisk)
-fastboot flash system system.img          (烧写system)
+sudo fastboot -w                               (格式化userdata和cache)
+sudo fastboot flash ramdisk ramdisk-u.img      (烧写ramdisk)
+sudo fastboot flash system system.img          (烧写system)
 
 f) 也可以在PC端通过fastboot烧写uboot到SD卡
    先手动生成bl2.bin
@@ -402,10 +402,10 @@ f) 也可以在PC端通过fastboot烧写uboot到SD卡
       ../mkbl2 ../../u-boot.bin bl2.bin 14336
 
    然后输入以下命令:  
-      fastboot flash fwbl1 E4412_N.bl1.bin
-      fastboot flash bl2 bl2.bin
-      fastboot flash bootloader ../../u-boot.bin
-      fastboot flash tzsw E4412_tzsw.bin 
+     sudo fastboot flash fwbl1 E4412_N.bl1.bin
+     sudo fastboot flash bl2 bl2.bin
+     sudo fastboot flash bootloader ../../u-boot.bin
+     suod fastboot flash tzsw E4412_tzsw.bin 
 
 
 -----------------------------------------------------
