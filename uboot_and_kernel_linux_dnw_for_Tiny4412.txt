@@ -40,51 +40,7 @@ d) 编译 用于生成bl2 的工具
    cd sd_fuse; make
 
 
------------------------------------------------------
-2. 制作启动 Tiny4412 的SD卡
------------------------------------------------------
-a) 先准备一张4G或以上的SDHC卡
-   注意：该卡的已有数据将会被破坏，因此请先对SD卡上的数据进行备份。
-
-b) fusing SD card
-   假设SD卡已被PC Linux识别为/dev/sdb, 以root用户运行以下命令即可：
-   cd sd_fuse/tiny4412
-   sudo ./sd_fusing.sh /dev/sdb
-   
-       my log:
-                  ai@ai-OptiPlex-790:~/Documents/uboot_tiny4412/sd_fuse/tiny4412$ sudo ./sd_fusing.sh /dev/sdc
-                  /dev/sdc reader is identified.
-                  ---------------------------------------
-                  BL1 fusing
-                  16+0 records in
-                  16+0 records out
-                  8192 bytes (8.2 kB, 8.0 KiB) copied, 0.0245854 s, 333 kB/s
-                  ---------------------------------------
-                  BL2 fusing
-                  28+0 records in
-                  28+0 records out
-                  14336 bytes (14 kB, 14 KiB) copied, 0.0401462 s, 357 kB/s
-                  ---------------------------------------
-                  u-boot fusing
-                  540+1 records in
-                  540+1 records out
-                  276932 bytes (277 kB, 270 KiB) copied, 0.691076 s, 401 kB/s
-                  ---------------------------------------
-                  TrustZone S/W fusing
-                  184+0 records in
-                  184+0 records out
-                  94208 bytes (94 kB, 92 KiB) copied, 0.250444 s, 376 kB/s
-                  ---------------------------------------
-                  U-boot image is fused successfully.
-                  Eject SD card and insert it again.
-
-
-
------------------------------------------------------
-3. 使用SD卡启动 Tiny4412 并烧写Android
------------------------------------------------------
-a) 将已经制作好的SD卡插到 Tiny4412 板上，拨动S2切换到SDBOOT，同时连接
-   串口线到PC且假设已经准备好。
+--------------
 
 b) 开发板加电，然后在串口控制台(如minicom)，按任意键进入uboot 命令行模式
 
@@ -278,4 +234,118 @@ TINY4412 #fdisk -c 1 608 2057 520
 
 
 （5）Linux下DNW工具安装：
+      https://github.com/shiguanghu/tools_notes/tree/master/DNW    //从这里下载，编译，安装。
 
+
+（6）DNW下载好了，就可以把uboot烧写到emmc了
+
+         TINY4412 # emmc open 1        //uboot的emmc命令
+         eMMC OPEN Success.!!
+                  !!!Notice!!!
+         !You must close eMMC boot Partition after all image writing!
+         !eMMC boot partition has continuity at image writing time.!
+         !So, Do not close boot partition, Before, all images is written.!
+
+         //上面提示emmc开启成功， 注意说明， emmc一旦打开，需要连续烧录，烧录完后可以关闭emmc。
+
+//6.1 烧写bl1.bin
+              //uboot开始等待从PC侧传递bl1.bin过来
+                  TINY4412 # dnw       
+                  OTG cable Connected!
+                  Now, Waiting for DNW to transmit data
+                  
+              //Linux PC端开始传输 E4412_N.bl1.bin:
+                  ai@ai-OptiPlex-790:~/Documents/uboot_tiny4412$ sudo dnw  sd_fuse/tiny4412/E4412_N.bl1.bin
+                  
+              //uboot的log
+                  Download Done!! Download Address: 0xc0000000, Download Filesize:0x2000
+                  Checksum is being calculated.
+                  Checksum O.K.
+                  
+              //烧写E4412_N.bl1.bin文件到eMMC。 起始0， 16个block, 一个block是512B, 16*512=8*1024=8KB. 这个是bl1.bin的存放位置
+                  TINY4412 # mmc write 1 0xc0000000 0 0x10
+                  MMC write: dev # 1, block # 0, count 16 ... 16 blocks written: OK
+                  
+以此类推， 烧录bl2.bin, u-boot.bin, tzsw.bin
+
+//6.2 烧写bl2.bin                        
+               //
+                  TINY4412 # dnw
+                  OTG cable Connected!
+                  Now, Waiting for DNW to transmit data
+                  
+              //Linux PC端开始传输 bl2.bin:
+                  ai@ai-OptiPlex-790:~/Documents/uboot_tiny4412$ sudo dnw  sd_fuse/tiny4412/bl2.bin
+              
+              //uboot的log
+                  Download Done!! Download Address: 0xc0000000, Download Filesize:0x3800
+                  Checksum is being calculated.
+                  Checksum O.K.
+                  
+              //烧写bl2.bin文件到eMMC。
+                  TINY4412 # mmc write 1 0xc0000000 0x10 0x1C
+                  MMC write: dev # 1, block # 16, count 28 ... 28 blocks written: OK
+                  
+//6.3 烧写u-boot.bin 
+              //
+                  TINY4412 # dnw
+                  OTG cable Connected!
+                  Now, Waiting for DNW to transmit data
+              //
+                  ai@ai-OptiPlex-790:~/Documents/uboot_tiny4412$ sudo dnw u-boot.bin
+                  
+              //
+                  Download Done!! Download Address: 0xc0000000, Download Filesize:0x439c4
+                  Checksum is being calculated.
+                  Checksum O.K.
+              //
+                  TINY4412 # mmc write 1 0xc0000000 0x30 0x21D
+                  MMC write: dev # 1, block # 48, count 541 ... 541 blocks written: OK
+
+//6.3 烧写E4412_tzsw.bin
+              //
+                  TINY4412 # dnw
+                  OTG cable Connected!
+                  Now, Waiting for DNW to transmit data               
+              //
+                  ai@ai-OptiPlex-790:~/Documents/uboot_tiny4412$ sudo dnw  sd_fuse/tiny4412/E4412_tzsw.bin
+                  Download Done!! Download Address: 0xc0000000, Download Filesize:0x17000
+                  Checksum is being calculated.
+                  Checksum O.K.
+              //
+                  TINY4412 # mmc write 1 0xc0000000 0x2c0 0xB8
+                  MMC write: dev # 1, block # 704, count 184 ... 184 blocks written: OK
+
+启动分区,到此全部烧写完成， 注意， 一定要关闭emmc:
+u-boot下继续输入：
+TINY4412 # emmc close 1
+eMMC CLOSE Success.!!
+
+
+现在uboot已经完整的烧入到了eMMC， 可以将开关S2拨到 NAND(eMMC启动)一侧， 从emmc启动， 看uboot输出log已经变成了:
+   TINY4412 # OK
+   U-Boot 2010.12-00000-gd1851db (Apr 07 2018 - 16:39:24) for TINY4412
+
+   CPU:	S5PC220 [Samsung SOC on SMP Platform Base on ARM CortexA9]
+      APLL = 1400MHz, MPLL = 800MHz
+
+   Board:	TINY4412
+   DRAM:	1023 MiB
+
+   vdd_arm: 1.2
+   vdd_int: 1.0
+   vdd_mif: 1.1
+
+   BL1 version:  N/A (TrustZone Enabled BSP)
+
+   Checking Boot Mode ... EMMC4.41              //从SD变成了EMMC
+   REVISION: 1.1
+   MMC Device 0: 3728 MB
+   MMC Device 1: 7580 MB
+   MMC Device 2: N/A
+   *** Warning - using default environment
+
+   Net:	No ethernet found.
+   Hit any key to stop autoboot:  0 
+   TINY4412 # <INTERRUPT>
+   TINY4412 #
