@@ -14,10 +14,36 @@
 
 ビルドログを見ると、確かに-O0オプションが付加(-fno-strict-overflowの後)されている。
 
+//GCC -D/-U option: マクロ定義/削除
+//下記logは、見やすくするため、行を変えた
+
 % cat build.log
 .......
-gcc -Wp,-MD,net/ipv4/.icmp.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.2.4/include -I/home/xxx/linux-2.6/arch/um/include -Iinclude  -include include/generated/autoconf.h -D__KERNEL__ -I/home/xxx/linux-2.6/arch/um/sys-i386 -I/home/xxx/linux-2.6/arch/x86/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -D__arch_um__ -DSUBARCH=\"i386\" -I/home/xxx/linux-2.6/arch/um/include/shared -I/home/xxx/linux-2.6/arch/um/sys-i386/shared -I/home/xxx/linux-2.6/arch/um/include/shared/skas -Dvmap=kernel_vmap -Din6addr_loopback=kernel_in6addr_loopback -Din6addr_any=kernel_in6addr_any -funit-at-a-time -march=i686 -Wa,-mtune=generic32 -mpreferred-stack-boundary=2 -ffreestanding -D_LARGEFILE64_SOURCE -Derrno=kernel_errno -Dsigprocmask=kernel_sigprocmask -Dmktime=kernel_mktime -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -O0    -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(icmp)"  -D"KBUILD_MODNAME=KBUILD_STR(icmp)"  -c -o net/ipv4/icmp.o net/ipv4/icmp.c
+gcc -Wp,-MD,net/ipv4/.icmp.o.d  -nostdinc -isystem /usr/lib/gcc/i486-linux-gnu/4.2.4/include 
+-I/home/xxx/linux-2.6/arch/um/include 
+-Iinclude  -include include/generated/autoconf.h 
+-D__KERNEL__ 
+-I/home/xxx/linux-2.6/arch/um/sys-i386 
+-I/home/xxx/linux-2.6/arch/x86/include 
+-Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration 
+-Wno-format-security -fno-delete-null-pointer-checks 
+-Os -D__arch_um__ -DSUBARCH=\"i386\" 
+-I/home/xxx/linux-2.6/arch/um/include/shared 
+-I/home/xxx/linux-2.6/arch/um/sys-i386/shared 
+-I/home/xxx/linux-2.6/arch/um/include/shared/skas 
+-Dvmap=kernel_vmap -Din6addr_loopback=kernel_in6addr_loopback -Din6addr_any=kernel_in6addr_any -funit-at-a-time 
+-march=i686 -Wa,-mtune=generic32 -mpreferred-stack-boundary=2 -ffreestanding -D_LARGEFILE64_SOURCE -Derrno=kernel_errno 
+-Dsigprocmask=kernel_sigprocmask -Dmktime=kernel_mktime -fno-stack-protector -fno-omit-frame-pointer -fno-optimize-sibling-calls 
+-g -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -O0
+-D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(icmp)"  -D"KBUILD_MODNAME=KBUILD_STR(icmp)"  -c -o net/ipv4/icmp.o net/ipv4/icmp.c
 ..............
+
+
+//
+//gcc -Wp,-MD,...  
+//から
+//-D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(icmp)"  -D"KBUILD_MODNAME=KBUILD_STR(icmp)"  -c -o net/ipv4/icmp.o net/ipv4/icmp.c
+//までが、一つのビルド単位？
 
 
 gdbで試すと、ちゃんとnetが見られるようになった。
