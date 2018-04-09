@@ -1,0 +1,19 @@
+linux内核代码预处理后便于阅读
+
+内核代码阅读的时候，有没有遇到因为宏定义或者inline层次太深,而不知道到底代码是什么样子。代码预处理可以解决这个难题。
+
+平台：linux 3.10. ARM，PC linux上类似。
+
+
+//加V=1重新编译内核
+//make内核增加V=1选项，会详细打印编译过程，-B是要求重新编译内核所有模块。
+cd linux-3.4.5 && make ARCH=arm defconfig && make ARCH=arm CROSS_COMPILE=arm-buildroot-linux-uclibcgnueabi- EXTRAVERSION=- -B V=1 uImage
+
+//编译内核并保存编译log到文件，搜索你要预编译的文件，如mm/slab.c，会找到如下编译命令：
+arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,mm/.slab.o.d  -nostdinc -isystem /home/test/build/gcc-4.9.8/build_arm/staging_dir/usr/bin/../lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.9.8/include -I/home/test/linux/kernels/linux-3.4.5/arch/arm/include -Iarch/arm/include/generated -Iinclude  -include /home/test/linux/kernels/linux-3.4.5/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-zx297510/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -marm -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -fno-inline-functions-called-once -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO    -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(slab)"  -D"KBUILD_MODNAME=KBUILD_STR(slab)" -c -o mm/.tmp_slab.o mm/slab.c
+
+//编译预处理指定文件
+把编译命令修改成预处理命令：-c -o mm/.tmp_slab.o修改成-E -o mm/slab.E mm/slab.c，在内核目录linux-3.4.5直接执行。如果是交叉编译链，可能需要把arm-buildroot-linux-uclibcgnueabi-gcc所在路径加入到环境变量PATH里。
+arm-buildroot-linux-uclibcgnueabi-gcc -Wp,-MD,mm/.slab.o.d  -nostdinc -isystem /home/test/build/gcc-4.9.8/build_arm/staging_dir/usr/bin/../lib/gcc/arm-buildroot-linux-uclibcgnueabi/4.9.8/include -I/home/test/linux/kernels/linux-3.4.5/arch/arm/include -Iarch/arm/include/generated -Iinclude  -include /home/test/linux/kernels/linux-3.4.5/include/linux/kconfig.h -D__KERNEL__ -mlittle-endian -Iarch/arm/mach-zx297510/include -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -O2 -marm -fno-dwarf2-cfi-asm -mabi=aapcs-linux -mno-thumb-interwork -funwind-tables -D__LINUX_ARM_ARCH__=7 -march=armv7-a -msoft-float -Uarm -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fomit-frame-pointer -g -fno-inline-functions-called-once -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -DCC_HAVE_ASM_GOTO    -D"KBUILD_STR(s)=#s" -D"KBUILD_BASENAME=KBUILD_STR(slab)"  -D"KBUILD_MODNAME=KBUILD_STR(slab)" -E -o mm/slab.E mm/slab.c
+
+执行完命令，在内核的mm目录就能看到slab.c的预处理后文件slab.E文件了。看一下kmalloc函数代码，是不是清晰很多了。
