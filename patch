@@ -1,4 +1,313 @@
- 
+--------------------------------------------------------
+1
+--------------------------------------------------------
+说到patch命令，就不得不提到diff命令，也就是制作patch的必要工具。diff命令，在制作patch文件的时候，基本上只需要使用到diff -Nau 这个参数，如果比较的是文件夹，还要加上-r参数，所以一般直接使用Naur参数。
+功能说明：修补文件。
+
+语　　法：patch [-bceEflnNRstTuvZ][-B <备份字首字符串>][-d <工作目录>][-D <标示符号>][-F <监别列数>][-g <控制数值>][-i <修补文件>][-o <输出文件>][-p <剥离层级>][-r <拒绝文件>][-V <备份方式>][-Y <备份字首字符串>][-z <备份字尾字符串>][--backup-if　　 -mismatch][--binary][--help][--nobackup-if-mismatch][--verbose][原始文件 <修补文件>] 或 path [-p <剥离层级>] < [修补文件]
+
+补充说明：patch指令让用户利用设置修补文件的方式，修改，更新原始文件。倘若一次仅修改一个文件，可直接在指令列中下达指令依序执行。如果配合修补文件的方式则能一次修补大批文件，这也是Linux系统核心的升级方法之一。
+
+参　　数：
+　-b或--backup 　备份每一个原始文件。 
+　-B<备份字首字符串>或--prefix=<备份字首字符串> 　设置文件备份时，附加在文件名称前面的字首字符串，该字符串可以是路径名称。 
+　-c或--context 　把修补数据解译成关联性的差异。 
+　-d<工作目录>或--directory=<工作目录> 　设置工作目录。 
+　-D<标示符号>或--ifdef=<标示符号> 　用指定的符号把改变的地方标示出来。 
+　-e或--ed 　把修补数据解译成ed指令可用的叙述文件。 
+　-E或--remove-empty-files 　若修补过后输出的文件其内容是一片空白，则移除该文件。 
+　-f或--force 　此参数的效果和指定-t参数类似，但会假设修补数据的版本为新　版本。 
+　-F<监别列数>或--fuzz<监别列数> 　设置监别列数的最大值。 
+　-g<控制数值>或--get=<控制数值> 　设置以RSC或SCCS控制修补作业。 
+　-i<修补文件>或--input=<修补文件> 　读取指定的修补问家你。 
+　-l或--ignore-whitespace 　忽略修补数据与输入数据的跳格，空格字符。 
+　-n或--normal 　把修补数据解译成一般性的差异。 
+　-N或--forward 　忽略修补的数据较原始文件的版本更旧，或该版本的修补数据已使　用过。 
+　-o<输出文件>或--output=<输出文件> 　设置输出文件的名称，修补过的文件会以该名称存放。 
+　-p<剥离层级>或--strip=<剥离层级> 　设置欲剥离几层路径名称。 
+　-f<拒绝文件>或--reject-file=<拒绝文件> 　设置保存拒绝修补相关信息的文件名称，预设的文件名称为.rej。 
+　-R或--reverse 　假设修补数据是由新旧文件交换位置而产生。 
+　-s或--quiet或--silent 　不显示指令执行过程，除非发生错误。 
+　-t或--batch 　自动略过错误，不询问任何问题。 
+　-T或--set-time 　此参数的效果和指定-Z参数类似，但以本地时间为主。 
+　-u或--unified 　把修补数据解译成一致化的差异。 
+　-v或--version 　显示版本信息。 
+　-V<备份方式>或--version-control=<备份方式> 　用-b参数备份目标文件后，备份文件的字尾会被加上一个备份字符串，这个字符串不仅可用-z参数变更，当使用-V参数指定不同备份方式时，也会产生不同字尾的备份字符串。
+　-Y<备份字首字符串>或--basename-prefix=--<备份字首字符串> 　设置文件备份时，附加在文件基本名称开头的字首字符串。
+　-z<备份字尾字符串>或--suffix=<备份字尾字符串> 　此参数的效果和指定-B参数类似，差别在于修补作业使用的路径与文件名若为src/linux/fs/super.c，加上backup/字符串后，文件super.c会备份于/src/linux/fs/backup目录里。 
+　-Z或--set-utc 　把修补过的文件更改，存取时间设为UTC。 
+　--backup-if-mismatch 　在修补数据不完全吻合，且没有刻意指定要备份文件时，才备份文件。 
+　--binary 　以二进制模式读写数据，而不通过标准输出设备。 
+　--help 　在线帮助。 
+　--nobackup-if-mismatch 　在修补数据不完全吻合，且没有刻意指定要备份文件时，不要备份文件。 
+　--verbose 　详细显示指令的执行过程。 
+
+实验的基本步骤。我打算是建立一个级联目录./x/xx/xxx/，在xxx目录下建立两个不同的文件xxx1,xxx2。然后在xxx目录下用diff命令，建立一个补丁文件xxx.patch，在xx目录下建立一个补丁文件xx.patch，在x目录下建立一个补丁文件x.patch。然后在这三个目录下实验。
+
+开始实验：建立实验目录
+[King@Fedora ~]$ mkdir -pv x/xx/xxx
+ mkdir: 已创建目录 “x”
+mkdir: 已创建目录 “x/xx”
+mkdir: 已创建目录 “x/xx/xxx”
+进入xxx目录下创建xxx1,xxx2
+ [King@Fedora ~]$ cd x/xx/xxx
+ [King@Fedora xxx]$ cat >> xxx1 << EOF
+> 111111
+ > 111111
+ > EOF
+
+
+ [King@Fedora xxx]$ cat >> xxx2 << EOF
+ > 111111
+ > 222222
+ > EOF
+查看这两个文件
+[King@Fedora xxx]$ diff -y xxx1 xxx2
+111111        111111
+ 111111       | 222222
+一定要注意：打补丁时所在的目录
+在xxx目录下创建补丁文件xxx.patch，并查看。
+[King@Fedora xxx]$ diff -Naru xxx1 xxx2 > xxx.patch
+[King@Fedora xxx]$ cat xxx.patch 
+- - - xxx1 2009-12-19 22:28:26.582959182 +0800
++++ xxx2 2009-12-19 22:28:42.798928591 +0800
+ @@ -1,2 +1,2 @@
+ 111111
+- 111111
+ +222222
+在xx目录下创建补丁文件xx.patch，并查看
+[King@Fedora xxx]$ cd ..
+ [King@Fedora xx]$ diff -Naru xxx/xxx1 xxx/xxx2 > xx.patch
+ [King@Fedora xx]$ cat xx.patch 
+--- xxx/xxx1 2009-12-19 22:28:26.582959182 +0800
+ +++ xxx/xxx2 2009-12-19 22:28:42.798928591 +0800
+ @@ -1,2 +1,2 @@
+ 111111
+-111111
+ +222222
+在x目录下创建补丁文件x.patch，并查看
+[King@Fedora xx]$ cd ..
+ [King@Fedora x]$ diff -Nu xx/xxx/xxx1 xx/xxx/xxx2 > x.patch
+ [King@Fedora x]$ cat x.patch 
+--- xx/xxx/xxx1 2009-12-19 22:28:26.582959182 +0800
+ +++ xx/xxx/xxx2 2009-12-19 22:28:42.798928591 +0800
+ @@ -1,2 +1,2 @@
+ 111111
+-111111
+ +222222
+现将patch文件都拷贝到xxx目录下去。
+[King@Fedora x]$ cp x.patch xx/xxx/
+ [King@Fedora x]$ cp xx/xx.patch xx/xxx/
+进入xxx目录开始实验
+[King@Fedora x]$ cd xx/xxx
+ [King@Fedora xxx]$ ls
+ x.patch xx.patch xxx1 xxx2 xxx.patch
+
+ [King@Fedora xxx]$ patch-p0< xxx.patch #用第二个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < xxx.patch #用第一个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+
+ [King@Fedora xxx]$ patch -p1 < xx.patch
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < xxx.patch
+ patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+
+ [King@Fedora xxx]$ patch -p2 < x.patch
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < x.patch
+ patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+
+------------------------------------------------------------
+
+[King@Fedora xx]$ patch-p0 < xx.patch # 用第二个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < xxx.patch #用第一个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+
+ [King@Fedora xxx]$ patch -p1 < x.patch
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < xxx.patch
+ patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+
+--------------------------------------------------------------------------
+[King@Fedora x]$ patch-p0< x.patch # 用第二个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 222222
+ [King@Fedora xxx]$ patch -RE < xxx.patch #用第一个的 补丁 修改 第一个文件
+patching file xxx1
+ [King@Fedora xxx]$ cat xxx1
+ 111111
+ 111111
+这里唯一需要说明的是p0的含义，因为在x.patch补丁文件里的路径信息是这样的：
+--- xx/xxx/xxx1   
+
+p表示跳过几级目录，因为是在x目录下使用的patch命令，xx目录就在x目录下，所以不必跳过任何目录，而应该使用--- xx/xxx/xxx1   完整路径，所以此时使用的是p0。
+
+注意：patch -p后面是不能带负数 的。不使用p参数的时候，patch命令会 忽略 任何目录，直接使用文件。
+
+[King@Fedora x]$ patch x/xx/xxx/xxx1 < x.patch # 用补丁x.patch 直接修改 文件xxx1，因为没有用p参数，所以 会 忽略掉补丁文件里的 所有目录。
+作为程序员，了解diff&patch命令是非常必要的。比如说我们发现某个项目有bug代码，而自己又没有提交权限，那么此时最合适的解决方法就是用diff命令做一个补丁发给项目成员。项目成员通过patch命令可以立刻知道你的意图。有人会说直接传一个新文件不是更简单？不要忘了，一个patch文件尺寸更小传输更快，而且可以明显的看到都做了哪些修改。
+
+保证当前目录是demo名录：
+
+# mkdir demo
+ # cd demo
+先模拟一个项目目录old：
+
+# mkdir -p old/a/b
+ # vi old/a/b/foo.txt
+ old_line_1
+ old_line_2
+假设我们发现项目old有bug代码，下面我们先拷贝一个新目录new，并在此修改bug代码：
+
+# cp -r old new
+ # vi new/a/b/foo.txt
+ new_line_1
+ new_line_2
+保证old和new两个目录都在当前目录下，下面就可以使用diff命令了，不要使用绝对路径，而应该使用相对路径，至于原因，看到文章结尾你就清楚了：
+
+# LC_ALL=C TZ=UTC0 diff -Naur old new > foo.patch
+如果不在意字符集，时差等问题，也可以省略LC_ALL=C TZ=UTC0环境变量：
+
+# diff -Naur old new > foo.patch
+内容来自Linuxren.NET
+其中-Naur参数属于固定用法，大多数时候，在使用diff命令时搭配这个参数就可以了。
+
+大概浏览一下补丁文件：
+
+# cat foo.patch
+ diff -Naur old/a/b/foo.txt new/a/b/foo.txt
+--- old/a/b/foo.txt  2009-12-07 20:40:07.000000000 +0800
+ +++ new/a/b/foo.txt  2009-12-07 20:41:51.000000000 +0800
+ @@ -1,2 +1,2 @@
+-old_line_1
+-old_line_2
+ +new_line_1
+ +new_line_2
+加减号后面的内容是有用的内容，其他的内容是方便你查阅的相关信息内容，补丁制作完成。
+
+此时的文件目录结构大概如下所示：
+
+#tree
+ demo
+ |-- old
+ | `-- a
+ |  `-- b
+ |   `-- foo.txt
+ |-- new
+ | `-- a
+ |  `-- b
+ |   `-- foo.txt 
+-- foo.patch
+下面看看如何使用patch来应用补丁，要注意的是当前目录是demo，试试下面命令：
+
+# patch -p0 < foo.patch
+ patching file old/a/b/foo.txt
+这里唯一需要说明的是p0的含义，因为在foo.patch补丁文件里的路径信息是这样的：
+
+--- old/a/b/foo.txt
+ p表示跳过几级目录，因为是在demo目录下使用的patch命令，old目录就在demo目录下，所以不必跳过任何目录，而应该使用old/a/b/foo.txt完整路径，所以此时使用的是p0。
+
+查看一下目标文件，你会发现内容已经修改成新的了：
+
+# cat old/a/b/foo.txt
+ new_line_1
+ new_line_2
+此时如果你再次使用patch命令，系统会问你是否想还原，输入y 还原：
+# patch -p0 < foo.patch
+ patching file old/a/b/foo.txt
+ Reversed (or previously applied) patch detected! Assume -R? [n] y
+查看一下目标文件，你会发现内容已经还原成旧的了：
+
+# cat old/a/b/foo.txt
+ old_line_1
+ old_line_2
+如果你想严格指定是 应用补丁  可以使用下面命令（就是增加N参数）：
+
+# patch -Np0 < foo.patch
+如果你想严格指定是 还原补丁  可以使用下面命令（就是增加R参数）：
+
+# patch -Rp0 < foo.patch
+注释：在本例中，每次应用补丁后，自己还原补丁，以备后用继续试验，我就不多说了。
+
+看到这里如果你对patch的p参数还不太清楚的话，接着往下看，我们改变一下当前路径：
+
+# cd old
+此时就应该是p1，而不是p0了，引用foo.patch文件的路径也要相对变一下，因为当前目录已经是old了： Linuxren.Net
+
+ # patch -p1 < ../foo.patch
+ patching file a/b/foo.txt
+因为此时我们是在old下使用patch命令，和a子目录平级，而补丁文件foo.patch里的路径声明是：
+
+--- old/a/b/foo.txt
+也就是说第一个斜线左边的old/部分已经没用了，这就是p1的含义！
+
+继续往深度变换路径，依次测试使用p2,p3参数：
+
+# cd a
+
+ # patch -p2 < ../../foo.patch
+ patching file b/foo.txt
+
+ # cd b
+
+ # patch -p3 < ../../../foo.patch
+ patching file foo.txt
+在本例中，p3已经是最深目录了，此时可以省略p参数：
+
+# patch < ../../../foo.patch
+ patching file foo.txt
+也就是说，不使用p参数的时候，patch命令会 忽略 任何目录，直接使用文件。
+
+下面接着文章前面说的为什么使用diff命令时最好不要使用绝对路径，而应该使用相对路径？
+
+答：如果你在使用diff的时候使用的是绝对路径，那么补丁文件里的文件路径信息会类似下面的样子：
+
+--- /a/b/c/d/e/f/g/bar.txt
+
+如此一来，当别人想应用你的补丁时，因为目录结构肯定有差异，所以就不得不费力判断到底使用p几。这样一来就很容易出错，相反，如果使用相对路径的话，大多数时候，p0或者p1就足够了，不易出错。
+以上就是本文的全部内容，希望对大家的学习有所帮助，也希望大家多多支持脚本之家。
+
+
+
+
+
+--------------------------------------------------------
+2
+-------------------------------------------------------- 
 linux下patch命令使用详解---linux打补丁命令
 
 功能说明：修补文件。
