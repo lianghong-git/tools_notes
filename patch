@@ -1,0 +1,123 @@
+ 
+linux下patch命令使用详解---linux打补丁命令
+
+功能说明：修补文件。
+
+语　　法：patch [-bceEflnNRstTuvZ][-B <备份字首字符串>][-d <工作目录>][-D <标示符号>][-F <监别列数>][-g <控制数值>][-i <修补文件>][-o <输出文件>][-p <剥离层级>][-r <拒绝文件>][-V <备份方式>][-Y <备份字首字符串>][-z <备份字尾字符串>][--backup-if　　 -mismatch][--binary][--help][--nobackup-if-mismatch][--verbose][原始文件 <修补文件>] 或 path [-p <剥离层级>] < [修补文件]
+
+补充说明：patch指令让用户利用设置修补文件的方式，修改，更新原始文件。倘若一次仅修改一个文件，可直接在指令列中下达指令依序执行。如果配合修补文件的方式则能一次修补大批文件，这也是Linux系统核心的升级方法之一。
+
+参　　数：
+　-b或--backup 　备份每一个原始文件。 
+　-B<备份字首字符串>或--prefix=<备份字首字符串> 　设置文件备份时，附加在文件名称前面的字首字符串，该字符串可以是路径名称。 
+　-c或--context 　把修补数据解译成关联性的差异。 
+　-d<工作目录>或--directory=<工作目录> 　设置工作目录。 
+　-D<标示符号>或--ifdef=<标示符号> 　用指定的符号把改变的地方标示出来。 
+　-e或--ed 　把修补数据解译成ed指令可用的叙述文件。 
+　-E或--remove-empty-files 　若修补过后输出的文件其内容是一片空白，则移除该文件。 
+　-f或--force 　此参数的效果和指定-t参数类似，但会假设修补数据的版本为新　版本。 
+　-F<监别列数>或--fuzz<监别列数> 　设置监别列数的最大值。 
+　-g<控制数值>或--get=<控制数值> 　设置以RSC或SCCS控制修补作业。 
+　-i<修补文件>或--input=<修补文件> 　读取指定的修补问家你。 
+　-l或--ignore-whitespace 　忽略修补数据与输入数据的跳格，空格字符。 
+　-n或--normal 　把修补数据解译成一般性的差异。 
+　-N或--forward 　忽略修补的数据较原始文件的版本更旧，或该版本的修补数据已使　用过。 
+　-o<输出文件>或--output=<输出文件> 　设置输出文件的名称，修补过的文件会以该名称存放。 
+　-p<剥离层级>或--strip=<剥离层级> 　设置欲剥离几层路径名称。 
+　-f<拒绝文件>或--reject-file=<拒绝文件> 　设置保存拒绝修补相关信息的文件名称，预设的文件名称为.rej。 
+　-R或--reverse 　假设修补数据是由新旧文件交换位置而产生。 
+　-s或--quiet或--silent 　不显示指令执行过程，除非发生错误。 
+　-t或--batch 　自动略过错误，不询问任何问题。 
+　-T或--set-time 　此参数的效果和指定-Z参数类似，但以本地时间为主。 
+　-u或--unified 　把修补数据解译成一致化的差异。 
+　-v或--version 　显示版本信息。 
+　-V<备份方式>或--version-control=<备份方式> 　用-b参数备份目标文件后，备份文件的字尾会被加上一个备份字符串，这个字符串不仅可用-z参数变更，当使用-V参数指定不同备份方式时，也会产生不同字尾的备份字符串。
+　-Y<备份字首字符串>或--basename-prefix=--<备份字首字符串> 　设置文件备份时，附加在文件基本名称开头的字首字符串。
+　-z<备份字尾字符串>或--suffix=<备份字尾字符串> 　此参数的效果和指定-B参数类似，差别在于修补作业使用的路径与文件名若为src/linux/fs/super.c，加上backup/字符串后，文件super.c会备份于/src/linux/fs/backup目录里。 
+　-Z或--set-utc 　把修补过的文件更改，存取时间设为UTC。 
+　--backup-if-mismatch 　在修补数据不完全吻合，且没有刻意指定要备份文件时，才备份文件。 
+　--binary 　以二进制模式读写数据，而不通过标准输出设备。 
+　--help 　在线帮助。 
+　--nobackup-if-mismatch 　在修补数据不完全吻合，且没有刻意指定要备份文件时，不要备份文件。 
+　--verbose 　详细显示指令的执行过程。
+
+patch，是打补丁的命令，有很多用法，见帮助#man patch
+patch -p0       (“p”指的是路径，后面的数字表示去掉路径的第几部分。0，表示不去掉，为全路径)
+patch -p1       (“p”后面的数字1，表示去掉前第一个路径)fetch http://people.freebsd.org/~delphij/misc/patch-bge-releng62
+fetch http://people.freebsd.org/~delphij/misc/patch-bce-watchdog-rewritecd /sys/dev/bge 
+fetch ... 
+patch -p0 < ...fetch http://people.freebsd.org/~delphij/misc/patch-tcp_auto_buf-20061212-RELENG_6.diff
+patch -p < patch-tcp_auto_buf-20061212-RELENG_6.diff 
+也可以把文件中的目录全改成系统已在的目录如/usr/src/sys.....注意：
+１，确认目录
+然后确认目录，如不在默认目录下，就写下要打补丁的当前绝对目录。如/usr/src/sys/dev/bge/if_bce.c２，P的使用
+可以使用不带数字的参数。
+patch 后的软件安装
+　
+telnetd服务器的问题及补丁 在当前FreeBSD所有版本中，也就是FreeBSD 5.0、FreeBSD 4.3、FreeBSD 4.2、FreeBSD 4.1.1、FreeBSD 4.1、FreeBSD 4.0、FreeBSD 3.x、FreeBSD 2.x的版本，其telnetd守护进程中存在一个致命的缓冲区溢出漏洞，该问题是由于telnetd在处理telnet协议选项的函数中没有进行有效的边界检查，当使用某些选项（\'AYT\'）时，可能发生缓冲区溢出。这会导致远程root级别的安全威胁。 
+因此，如果一定要使用telnet服务的话，必须为服务器打上最新的patch，该patch可以从以下链接获得： (注：通常有两个版本的telnetd服务器，有crypto及无crypto的版本，因此需要判断主机使用的是哪种版本的telnetd，这通常可以通过察看src文件来判断，比如# ls /usr/src/crypto/telnet/telnetd，如果不存在，则说明使用的是无crypto的版本了，在判别清楚之后再分别下载相关补丁文件) crypto版本补丁： 
+ftp://ftp.freebsd.org/pub/FreeBSD/CERT/patches/SA-01:49/telnetd-crypto.patch 
+ftp://ftp.freebsd.org/pub/FreeBSD/CERT/patches/SA-01:49/telnetd-crypto.patch.asc patch方法： 
+# cd /usr/src/ 
+# patch -p < /path/to/patch 
+# cd /usr/src/secure/libexec/telnetd 
+# make depend && make all install 无crypto版本补丁： 
+ftp://ftp.freebsd.org/pub/FreeBSD/CERT/patches/SA-01:49/telnetd.patch 
+ftp://ftp.freebsd.org/pub/FreeBSD/CERT/patches/SA-01:49/telnetd.patch.asc patch方法： 
+# cd /usr/src/ 
+# patch -p < /path/to/patch 
+# cd /usr/src/libexec/telnetd 
+# make depend && make all install 例子来源http://toby.bokee.com/文件：isp1161-2.6.12.patch(在/root下)
+由于patch文件的首行已经指明了路径，所以根据当前所在的目录，加不同的参数使用patch命令：
+1：如果当前的目录是和linux-2.6.12的同级目录：
+[root@ www.linuxidc.com]#patch -p0 </root/isp1161-2.6.12.patch
+ 
+2:如果当前的目录为 linux-2.6.12/:
+[root@ www.linuxidc.com]#patch -p1 </root/isp1161-2.6.12.patch
+ 
+3:如果当前的目录为 linux-2.6.12/drivers/：
+[root@ www.linuxidc.com]#patch -p2 </root/isp1161-2.6.12.pathc
+ 
+0,1,2,是指略去的patch文件中的前几级目录。
+ 
+ln 命令的使用
+
+
+这是linux中一个非常重要的命令。它的功能是为某一个文件在另外一个位置建立一个不同的链接，这个命令最常用的参数是-s,具体用法是：ln -s 源文件 目标文件。
+
+当我们需要在不同的目录，用到相同的文件时，我们不需要在每一个需要的目录下都放一个必须相同的文件，我们只要在某个固定的目录放上该文件，然后在其它的目录下用ln命令链接（link）它就可以，不必重复的占用磁盘空间。
+
+
+例如：ln -s /bin/less /usr/local/bin/less
+
+-s 是代号（symbolic）的意思。
+
+这里有两点要注意：
+
+第一，ln命令会保持每一处链接文件的同步性。也就是说，不论你改动了哪一处，其它的文件都会发生相同的变化。
+
+patch附带有一个很好的帮助，其中罗列了很多选项，但是99%的时间只要两个选项就能满足我们的需要：
+
+　　patch -p1 < [patchfile]
+
+　　patch -R < [patchfile] (used to undo a patch)
+　　-p1选项代表patchfile中文件名左边目录的层数，顶层目录在不同的机器上有所不同。要使用这个选项，就要把你的patch放在要被打补丁的目录下，然后在这个目录中运行path -p1 < [patchfile]。来自Linux内核patch的一个简短的引用可以这样实现：
+
+　　diff -u --recursive --new-file v2.1.118/linux/mm/swapfile.c linux/mm/swapfile. c--- v2.1.118/linux/mm/swapfile.c Wed Aug 26 11:37:45 1998 +++ linux/mm/swapfile.c Wed Aug 26 16:01:57 1998 @@ -489,7 +489,7 @@
+
+　　int swap_header_version;
+
+　　int lock_map_size = PAGE_SIZE;
+
+　　int nr_good_pages = 0; - char tmp_lock_map = 0; + unsigned long tmp_lock_map = 0;
+　　应用来自本段中使用-p1开关拷贝的patch可以有效地减短patch定位的路径；patch会查找当前目录下一个名为/mm的子目录，接着应该会在这儿发现swapfile.c文件，然后等待打补丁。在这个过程中，以破折号（“-”号，译者注）开始的行会被一个以加号（“+”号，译者注）开始的行代替。一个典型的patch会包含对多个文件的更新，每个部分中都由对两个版本的文件运行diff -u命令的输出结果组成。
+
+　　patch在操作时把自己的输出结果显示在屏幕上，但是这种输出通常都滚屏太快，来不及观看。原来准备patch的文件名为*.orig，新的patch文件会覆盖这个初始文件名。
+
+打补丁的问题
+
+　　使用不同版本的patch问题来源可能不同，所有的版本在网络上都是可用的。Larry Wall近年来已经不再做很多工作来更新patch了，这可能是由于他最后发行的一个版本在大部分情况下都能正常运行。最近几年以来，一直是GNU项目的 FSF程序员发行新版本的patch。他们首先修订有问题的patch，但是我最近一直使用没有问题的2.5版本（这是Debian2.0的发行版本号）。过去，我的2.1版本也一直运行的很好。当前的GNU patch的版本可以从GNU FTP站点上获取，然而大部分人都只使用他们Linux发行版中所提供的版本。
+
+　　让我们假定你已经对一个目录下的源程序文件进行了patch修补工作，但是patch并没有清晰地发挥作用。这可能会偶然发生，在打补丁的过程中会显示错误信息，其中带有行号，说明哪一个文件出现了问题。有时错误是很明显的，例如缺少了分号，这种错误可以不费多大力气就能改正。另外一种可能是从 patch部分删除了产生问题的部分，但是这样根据所涉及到的文件的不同可能会正常工作，也可能不能正常工作了。
+
+　　另外一种常见的错位为：假设你有一个未使用tar打包的内核源程序文件，在/linux/arch/下浏览各个子目录时你会发现各种机器体系结构子目录，例如alpah、sparc等等。如果你和大多数Linux用户一样，使用的是Intel的处理器（或者是Intel系列），你可以决定删除这些目录，这些目录对于编译你特殊的内核并不需要，只是白白占用了磁盘空间。一段时间之后发行了一个新的内核patch，此时试图进行patch操作，当它发现不能找到自己打补丁需要的Alpha或者PPC文件，就会停顿下来。幸运的是patch在这些地方允许用户参与，它会询问Skip this patch?回答y，patch就可以按照正确的路径继续执行。也许你需要回答这个问题很多次，因此允许自己不需要的目录保留在磁盘上是一种很好的方法。
