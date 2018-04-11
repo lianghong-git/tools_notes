@@ -53,7 +53,8 @@ sudo dd iflag=dsync oflag=dsync if=uboot.bin of=/dev/sdb seek=1
 sync
 
 -----------------------------------------------------------
-5. 根据 Tiny4412 文档的描述， 拷贝FriendlyARM.ini, zImage... 到 images 文件夹内
+5. 根据 Tiny4412 文档的描述， 拷贝FriendlyARM.ini, zImage... 到 SD卡 images 文件夹内。
+   必须都放到images Folder!
 -----------------------------------------------------------
 sudo mount /dev/sdb1 /mnt/tmp
 sudo mkdir /mnt/tmp/images
