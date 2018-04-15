@@ -3,7 +3,6 @@
       2. 制作启动 Tiny4412 的SD卡
       3. 使用SD卡启动 Tiny4412 并烧写Android
       4. 使用SD卡启动 Android
-
 目录B：
    （1）将u-boot下载到SD卡， 从SD卡启动u-boot
    （2）用U-boot的 fdisk 命令查看设备的分区表信息
