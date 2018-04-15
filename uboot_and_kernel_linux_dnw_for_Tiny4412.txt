@@ -1,5 +1,3 @@
-
-
 目录A：
       1. Build uboot
       2. 制作启动 Tiny4412 的SD卡
@@ -21,9 +19,6 @@
    (7)烧写内核到eMMC
    (8)设置uboot启动参数，启动内核，并挂接网络文件系统NFS
    （9）烧写文件系统到eMMC
-
-
-
 
 
 ////////////////////////////
@@ -55,7 +50,6 @@ d) 编译 用于生成bl2 的工具
 
 
 --------------
-
 b) 开发板加电，然后在串口控制台(如minicom)，按任意键进入uboot 命令行模式
 
 c) 对SD卡进行分区
@@ -85,14 +79,10 @@ f) 也可以在PC端通过fastboot烧写uboot到SD卡
    ../mkbl2 ../../u-boot.bin bl2.bin 14336
 
    然后输入以下命令:  
-   fastboot flash fwbl1 E4412_N.bl1.bin
-   
-fastboot flash bl2 bl2.bin
-   
-fastboot flash bootloader ../../u-boot.bin
-
-   fastboot flash tzsw E4412_tzsw.bin 
-
+      fastboot flash fwbl1 E4412_N.bl1.bin
+      fastboot flash bl2 bl2.bin
+      fastboot flash bootloader ../../u-boot.bin
+      fastboot flash tzsw E4412_tzsw.bin 
 
 -----------------------------------------------------
 4. 使用SD卡启动 Android
