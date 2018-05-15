@@ -1,0 +1,41 @@
+ git<git rebase 修改以前提交过的内容>
+ 
+git rebase 使用总结：
+使用git rebase 修改以前已经提交的内容
+
+比如要修改之前的commit的 hashcode为：187f869c9d54c9297d6b0b1b4ff47d2ec781a55e
+
+1，git rebase 187f869c9d54c9297d6b0b1b4ff47d2ec781a55e^ --interactive
+
+　　　　　　　　--退回到要修改的commit的前一个点上，执行后，git会调用默认的vi编辑器显示commit到最新commit的所有记录，把我们要修改的那一项的首行的pick 改成edit。
+2， git add <filepattern>
+
+　　　　　　　　--修改完我们要修改的内容后，利用git add 添加
+3， git commit --amend
+
+　　　　　　　　--修改这个commit
+
+4，git rebase --continue
+
+　　　　　　　　-- 提交修改后的commit 并且返回到原来的head 处
+
+ 
+git rebase 冲突合并：
+1，手动修改冲突（可以用git status查看冲突文件）
+冲突产生后，文件系统中冲突了的文件（这里是test.txt）里面的内容会显示为类似下面这样：
+ 
+a123
+<<<<<<< HEAD
+b789
+=======
+b45678910
+>>>>>>> 6853e5ff961e684d3a6c02d4d06183b5ff330dcc
+c
+ 
+其中：冲突标记<<<<<<< （7个<）与=======之间的内容是我的修改，=======与>>>>>>>之间的内容是别人的修改。
+此时，还没有任何其它垃圾文件产生。
+ 
+最简单的编辑冲突的办法，就是直接编辑冲突了的文件（test.txt），把冲突标记删掉，把冲突解决正确
+ 
+2，git add  <文件名>
+3，git rebase --continue
