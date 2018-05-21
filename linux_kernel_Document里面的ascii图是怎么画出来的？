@@ -1,6 +1,46 @@
 
+Creating diagrams in ASCII:
+
+1. 软件的名字：ansiedit
+2. 有个在线编辑的网站：andyherbert.github.io/ansiedit/但不知道kernel的大佬们使用的是什么软件？
 
 
-软件的名字：ansiedit
+3.asciio
+I've used asciio for several years. Many of the diagrams on this site I've created using asciio.
+example
+  vncviewer         .-,(  ),-.    
+   __  _         .-(          )-.           gateway           vncserver 
+  [__]|=|  ---->(    internet    )-------> __________ ------> ____   __ 
+  /::/|_|        '-(          ).-'        [_...__...°]       |    | |==|
+                     '-.( ).-'                               |____| |  |
+                                                             /::::/ |__|
+The GUI looks like this....
+          ...
 
-有个在线编辑的网站：andyherbert.github.io/ansiedit/但不知道kernel的大佬们使用的是什么软件？
+NOTE: Everything is driven from the right click menu as well as short-cut keys.
+
+4.DrawIt
+Using vim along with the DrawIt plugin you can also create basic diagrams. 
+A good overview of how to install and use it is available here in this article titled: 
+     How To Create ASCII Drawings in Vim Editor (Draw Boxes, Lines, Ellipses, Arrows Inside Text File).
+     
+     
+5.asciiflow
+There's a website called asciiflow which is probably the easiest way to draw these types of diagrams.
+
+
+6.JavE
+JavEAnother tool, JavE, written in Java that can create ascii diagrams like this as well.                                 
+                                 ,'''''''''''''|
+                                 | Controller  |
+                                 |             |
+                                 '`'i''''''''''
+                                  ,'        `.
+                                ,'            `.
+                               -                -
+                     ,'''''''''''''|      ,''''''''''''`.
+                     |    Model    |______|    View     |
+                     |             |      |             |
+                      `''''''''''''       '`'''''''''''''
+The GUI looks like this:
+         .....
