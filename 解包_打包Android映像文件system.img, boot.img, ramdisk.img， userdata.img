@@ -1,0 +1,150 @@
+-------------------------------------------------------------------------
+在linux平台上，编译得到image文件之后，可以通过挂载image文件到指定目录的方法，对image文件中的内容进行修改，然后再重新打包生成新的image文件。
+-------------------------------------------------------------------------
+具体方法：
+先使用simg2img对image进行格式转换。
+然后将转换之后的image挂载到指定文件目录下，并对挂载后的目录进行目录结构调整和文件更新
+最后将挂载目录重新打包生成新的image文件，并替换原有image文件，同时umount挂载目录。
+
+#!/bin/bash
+
+# creat image
+
+SDK_INATSLL_PATH="/work/EagleSDK/install/"
+SDK_LIBRARY_PATH="/work/EagleSDK/install/sysroots/x86_64-linux/usr/lib/"
+SDK_BIN_PATH="/work/EagleSDK/install/sysroots/x86_64-linux/usr/bin/"
+source $SDK_INATSLL_PATH/environment-setup-cortexa8hf-vfp-neon-linux-gnueabi
+
+mkdir tmp-system
+simg2img userdata.img userdata.ext4.img
+sudo mount -o loop userdata.ext4.img ./tmp-system/
+sudo LD_LIBRARY_PATH=$SDK_LIBRARY_PATH $SDK_BIN_PATH/make_ext4fs -s -l 4G ./userdata.img ./tmp-system/
+sudo umount ./tmp-system 
+
+
+-------------------------------------------------------------------------
+Linux下 解包/打包 Android 映像文件 system.img, boot.img, ramdisk.img， userdata.img.
+-------------------------------------------------------------------------
+
+Android源码编译成功后会输出映像文件：system.img,boot.img, ramdisk.img,userdata.img等等。
+有时我们需要修改里面的内容，下面列出在Linux下如何解包/打包这些映像文件。
+
+ramdisk.img
+ramdisk.img是经cpio打包、并用gzip压缩的文件。
+解包： 新建一个工作目录，把当前目录更改为该工作目录，执行下面命令(注意: img文件位置可能不同).
+
+[plain] view plaincopy
+
+    gunzip -c  $HOME/img/ramdisk.img | cpio -i
+
+打包：在工作目录下，把该目录下的所有内容打包
+
+[plain] view plaincopy
+
+    find . | cpio -o -H newc | gzip > ../newramdisk.img
+
+参考文档：  http://android-dls.com/wiki/index.php?title=HOWTO:_Unpack%2C_Edit%2C_and_Re-Pack_Boot_Images
+boot.img
+
+boot.img包含2K字节头部，后面跟着的是zImage格式内核和和ramdisk格式的根文件系统。
+
+解包工具： Android自带的unpackbootimg，以及一些脚本工具比如split_bootimg.pl
+
+打包工具： Android自带的mkbootimg。
+
+参考资料 :
+
+中文请看： http://blog.csdn.net/wh_19910525/article/details/8200372
+  英文请看：  http://android-dls.com/wiki/index.php?title=HOWTO:_Unpack%2C_Edit%2C_and_Re-Pack_Boot_Images
+system.img (EXT4)
+
+system.img 是 sparse image格式文件，现有的mount命令无法直接处理。
+
+我们得把sparse image格式转变为普通的img格式，Android源码中带的ext4_utils可以做这个，没有Android源码也不用担心，该工具的源代码已被剥离出来，可以自行下载编译，地址是：http://forum.xda-developers.com/showthread.php?t=1081239
+
+我们得到工具有： simg2img,make_ext4fs等等:
+
+解包：
+
+[plain] view plaincopy
+
+    simg2img system.img system.img.ext4
+    mkdir mnt_dir
+    sudo mount -t ext4 -o loop system.img.ext4 mnt_dir
+
+打包：
+
+[plain] view plaincopy
+
+    sudo make_ext4fs -s -l 512M -a system system_new.img mnt_dir
+
+注意：在我的机器上必须用root权限执行make_ext4fs，否则新生成的image文件无法使用。
+
+userdata.img (EXT4)
+
+和system.img(EXT4) 一样处理
+
+ 
+
+ 
+
+( file_context_open: Error getting file context handle (No such file or directory)
+No such file or directory )
+
+参考下面链接：
+
+http://forum.xda-developers.com/galaxy-s2/general/ref-unpacking-repacking-stock-rom-img-t1081239/page23
+
+the problem is that this version requires a file_contexts file. This can be extracted from boot.img. The filename is file_contexts
+1. extract boot.img (i used AndroidImageKitchen for this)
+2. call make_ext4fs with -S parameter
+i.e.
+
+Code:
+
+make_ext4fs -l -s 2690M -a system -S <PATH_TO_FILE_CONTEXTS_FILE> system.img.ext4 <WHEREEVER_YOU_MOUNTED_SYSTEM_TO>
+
+btw: the name of the mountpoint doesnt matter. So calling your mountpoint sys was no problem
+
+If you have extracted boot.img the file_contexts-file should be located in the ramdisk folder.
+Don't panic if there is no such file. In this case you just have to use an earlier version of make_ext4fs.
+
+The file_contexts file is used by versions of android which use SELinux. I only found this on android versions >= 4.3.
+
+ 
+
+ 
+
+所以最终的命令是：
+
+./make_ext4fs -s -l 550M -a system -S ./file_contexts system_new.img mnt_dir
+
+ 
+
+make_ext4fs [ -l <len> ] [ -j <journal size> ] [ -b <block_size> ]
+    [ -g <blocks per group> ] [ -i <inodes> ] [ -I <inode size> ]
+    [ -L <label> ] [ -f ] [ -a <android mountpoint> ]
+    [ -S file_contexts ]
+    [ -z | -s ] [ -w ] [ -c ] [ -J ] [ -v ]
+    <filename> [<directory>]
+
+ 
+
+参数解析
+
+#make_ext4fs -s -l 512M -a root -L linux  ./rootfs_qt.img  ./root
+
+执行之后即会将root文件打包成  rootfs_qt.img 文件系统镜像。
+
+-l 512M"是分区大小，i9100的system分区是512M；
+-s就是生成ext4的S模式制作；
+
+-s  就是生成ext4的S模式制作；
+
+-l 512M 是分区大小；
+
+-a root 是指这个img用于Linux系统（若为-a system即表示为android系统，挂载点即是/system。使用这个参数，make_ext4fs会根据private/android_filesystem_config.h里定义好的权限来给文件夹里的所有文件重新设置权限，如果你刷机以后发现有文件权限不对，可以手工修改android_filesystem_config.h来添加权限，重新编译make_ext4fs，也可以不使用 “-a system”参数，这样就会使用文件的默认权限）。
+
+./rootfs_qt.img 表示在当前目录下生成镜像文件。
+
+./root 指定源路径
