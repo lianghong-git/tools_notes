@@ -38,61 +38,45 @@ ramdisk.img是经cpio打包、并用gzip压缩的文件。
     gunzip -c  $HOME/img/ramdisk.img | cpio -i
 
 打包：在工作目录下，把该目录下的所有内容打包
-
-[plain] view plaincopy
-
     find . | cpio -o -H newc | gzip > ../newramdisk.img
 
 参考文档：  http://android-dls.com/wiki/index.php?title=HOWTO:_Unpack%2C_Edit%2C_and_Re-Pack_Boot_Images
+--------------------------------
 boot.img
-
 boot.img包含2K字节头部，后面跟着的是zImage格式内核和和ramdisk格式的根文件系统。
 
 解包工具： Android自带的unpackbootimg，以及一些脚本工具比如split_bootimg.pl
-
 打包工具： Android自带的mkbootimg。
 
 参考资料 :
-
 中文请看： http://blog.csdn.net/wh_19910525/article/details/8200372
-  英文请看：  http://android-dls.com/wiki/index.php?title=HOWTO:_Unpack%2C_Edit%2C_and_Re-Pack_Boot_Images
+英文请看： http://android-dls.com/wiki/index.php?title=HOWTO:_Unpack%2C_Edit%2C_and_Re-Pack_Boot_Images
+--------------------------------
 system.img (EXT4)
-
 system.img 是 sparse image格式文件，现有的mount命令无法直接处理。
-
-我们得把sparse image格式转变为普通的img格式，Android源码中带的ext4_utils可以做这个，没有Android源码也不用担心，该工具的源代码已被剥离出来，可以自行下载编译，地址是：http://forum.xda-developers.com/showthread.php?t=1081239
-
+我们得把sparse image格式转变为普通的img格式，Android源码中带的ext4_utils可以做这个，没有Android源码也不用担心，
+该工具的源代码已被剥离出来，可以自行下载编译，地址是：http://forum.xda-developers.com/showthread.php?t=1081239
 我们得到工具有： simg2img,make_ext4fs等等:
 
 解包：
-
-[plain] view plaincopy
-
     simg2img system.img system.img.ext4
     mkdir mnt_dir
     sudo mount -t ext4 -o loop system.img.ext4 mnt_dir
 
 打包：
-
-[plain] view plaincopy
-
     sudo make_ext4fs -s -l 512M -a system system_new.img mnt_dir
 
 注意：在我的机器上必须用root权限执行make_ext4fs，否则新生成的image文件无法使用。
-
+--------------------------------
 userdata.img (EXT4)
+    和system.img(EXT4) 一样处理
 
-和system.img(EXT4) 一样处理
 
- 
-
- 
 
 ( file_context_open: Error getting file context handle (No such file or directory)
 No such file or directory )
 
 参考下面链接：
-
 http://forum.xda-developers.com/galaxy-s2/general/ref-unpacking-repacking-stock-rom-img-t1081239/page23
 
 the problem is that this version requires a file_contexts file. This can be extracted from boot.img. The filename is file_contexts
@@ -101,15 +85,14 @@ the problem is that this version requires a file_contexts file. This can be extr
 i.e.
 
 Code:
-
 make_ext4fs -l -s 2690M -a system -S <PATH_TO_FILE_CONTEXTS_FILE> system.img.ext4 <WHEREEVER_YOU_MOUNTED_SYSTEM_TO>
-
 btw: the name of the mountpoint doesnt matter. So calling your mountpoint sys was no problem
 
 If you have extracted boot.img the file_contexts-file should be located in the ramdisk folder.
 Don't panic if there is no such file. In this case you just have to use an earlier version of make_ext4fs.
 
-The file_contexts file is used by versions of android which use SELinux. I only found this on android versions >= 4.3.
+The file_contexts file is used by versions of android which use SELinux. 
+I only found this on android versions >= 4.3.
 
  
 
