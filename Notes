@@ -36,7 +36,16 @@ find . -type f ! -name "*.html"
 
 //排除多种文件类型的：
 find . -type f ! -name "*.html" -type  f ! -name "*.php" -type  f ! -name "*.svn-base"  -type  f ! -name "*.js"  -type  f ! -name "*.gif"  -type  f ! -name "*.png"  -type  f ! -name "*.cpp"  -type  f ! -name "*.h"  -type  f ! -name "*.o"  -type  f ! -name "*.jpg"  -type  f ! -name "*.so"  -type  f ! -name "*.bak"  -type  f ! -name "*.log"   
-//递归删除方法1
+
+
+
+
+
+
+
+
+
+
 
 
 ---------------------------------------------------------------------------
