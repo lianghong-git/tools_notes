@@ -1,7 +1,226 @@
--------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
 ltrace,strace
--------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+ltrace 能显现出哪个库函数被调用；
+strace 能显现出每个系统调用；
 
+
+
+
+用hello world的程序做对比
+
+#include <stdio.h>
+int main ()
+{
+        printf("Hello world!\n");
+        return 0;
+}
+
+gcc hello.c -o hello
+    //gcc 优化选项 -O1 -O2 -O3 -Os 优先级，-fomit-frame-pointer
+    //-O0表示没有优化,-O1为缺省值，-O3优化级别最高
+
+
+
+下面是一个 ltrace 与 strace 的对比：
+----------------------------------------------
+1)系统调用的输出对比
+----------------------------------------------
+----------------------------
+用ltrace跟踪hello程序:
+----------------------------
+ai@ai-OptiPlex-790:~/Documents/test$ ltrace ./hello 
+puts("Hello world!"Hello world!
+)                                             = 13
++++ exited (status 0) +++
+
+//看到程序是调用了puts()库函数，做了输出。
+
+
+----------------------------
+用strace跟踪hello程序:
+----------------------------
+ai@ai-OptiPlex-790:~/Documents/test$ strace  ./hello 
+execve("./hello", ["./hello"], [/* 61 vars */]) = 0
+brk(NULL)                               = 0x555cadbda000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=194713, ...}) = 0
+mmap(NULL, 194713, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f040fb52000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\340\22\2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=1960656, ...}) = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f040fb50000
+mmap(NULL, 4061792, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f040f57b000
+mprotect(0x7f040f751000, 2097152, PROT_NONE) = 0
+mmap(0x7f040f951000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1d6000) = 0x7f040f951000
+mmap(0x7f040f957000, 14944, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f040f957000
+close(3)                                = 0
+arch_prctl(ARCH_SET_FS, 0x7f040fb514c0) = 0
+mprotect(0x7f040f951000, 16384, PROT_READ) = 0
+mprotect(0x555cad582000, 4096, PROT_READ) = 0
+mprotect(0x7f040fb82000, 4096, PROT_READ) = 0
+munmap(0x7f040fb52000, 194713)          = 0
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
+brk(NULL)                               = 0x555cadbda000
+brk(0x555cadbfb000)                     = 0x555cadbfb000
+write(1, "Hello world!\n", 13Hello world!
+)          = 13
+exit_group(0)                           = ?
++++ exited with 0 +++
+ai@ai-OptiPlex-790:~/Documents/test$ 
+//看到程序调用write()系统调用，做了输出,同时strace还把hello程序运行时所做的系统调用都打印了出来.
+
+
+
+------------------------------------------------------
+同样的ltrace也可以把系统调用都打印出来,如下:
+------------------------------------------------------
+ltrace -S ./hello
+SYS_execve(NULL, NULL, NULL)                                                     = 0xffffffda
+SYS_brk(NULL)                                                                    = -38
+SYS_mmap2(0, 4096, 3, 34, -1)                                                    = -38
+SYS_access(0xb6798f, 4, 0xb6afc0, 0, 0xb6b6b4)                                   = -38
+SYS_open("/etc/ld.so.cache", 0, 00)                                              = -38
+SYS_fstat64(3, 0xbfba5414, 0xb6afc0, -1, 3)                                      = -38
+SYS_mmap2(0, 80846, 1, 2, 3)                                                     = -38
+SYS_close(3)                                                                     = -38
+SYS_open("/lib/libc.so.6", 0, 027756452364???, 512)                              = -38
+SYS_read(3, )                                                                    = -38
+SYS_fstat64(3, 0xbfba5478, 0xb6afc0, 4, 1)                                       = -38
+SYS_mmap2(0xb6e000, 0x13c5a4, 5, 2050, 3)                                        = -38
+SYS_mmap2(0xca5000, 12288, 3, 2066, 3)                                           = -38
+SYS_mmap2(0xca8000, 9636, 3, 50, -1)                                             = -38
+SYS_close(3)                                                                     = -38
+SYS_mmap2(0, 4096, 3, 34, -1)                                                    = -38
+SYS_set_thread_area(0xbfba5960, 0xb7f5e6c0, 243, 0xb6afc0, 0)                    = -38
+SYS_mprotect(0xca5000, 8192, 1, 7676, 0xca6e74)                                  = -38
+SYS_mprotect(0xb6a000, 4096, 1, 896, 0)                                          = -38
+SYS_munmap(0xb7f5f000, 80846 <unfinished ...>
+__libc_start_main(0x8048354, 1, 0xbfba5dd4, 0x8048390, 0x8048380 <unfinished ...>
+puts("Hello world!" <unfinished ...>
+SYS_fstat64(1, 0xbfba5c20, 0xca6ff4, 0xca74c0, 0xca74c0)                         = 0
+SYS_mmap2(0, 4096, 3, 34, -1)                                                    = 0xb7f72000
+SYS_write(1, "Hello world!\n", 13Hello world!
+)                                               = 13
+<... puts resumed> )                                                             = 13
+SYS_exit_group(0 <no return ...>
++++ exited (status 0) +++
+
+//到它实际是用SYS_write系统调用来做打印输出,其实write()函数是SYS_write的封装,SYS_write是真正的系统调用.
+
+
+----------------------------------------------------------------------------
+2)ltrace/strace的耗时
+----------------------------------------------------------------------------
+ai@ai-OptiPlex-790:~/Documents/test$ ltrace -c dd if=/dev/urandom of=/dev/null count=1000 //从urandom设备上读,这是一种产生随机数的设备
+1000+0 records in
+1000+0 records out
+512000 bytes (512 kB, 500 KiB) copied, 0.245303 s, 2.1 MB/s
+% time     seconds  usecs/call     calls      function
+------ ----------- ----------- --------- --------------------
+ 35.92    0.071025          71      1000 read
+ 34.83    0.068869          68      1000 write
+ 26.85    0.053094          53      1000 memcpy
+  0.25    0.000485          53         9 strlen
+  0.23    0.000460         230         2 dcgettext
+  0.17    0.000329         329         1 setlocale
+  0.14    0.000281          70         4 close
+  0.13    0.000253          63         4 __errno_location
+  0.13    0.000251         125         2 malloc
+  0.11    0.000222          74         3 sigaction
+  0.09    0.000185          61         3 strchr
+  0.09    0.000177          88         2 open
+  0.08    0.000163          81         2 __fprintf_chk
+  0.08    0.000161          80         2 dup2
+  0.08    0.000159          53         3 localeconv
+  0.07    0.000141          70         2 clock_gettime
+  0.06    0.000116          58         2 sigaddset
+  0.06    0.000114          57         2 sigismember
+  0.05    0.000095          95         1 bindtextdomain
+  0.05    0.000092          92         1 __overflow
+  0.05    0.000092          46         2 __freading
+  0.04    0.000080          80         1 lseek
+  0.04    0.000075          75         1 getenv
+  0.04    0.000074          74         1 textdomain
+  0.03    0.000069          69         1 __fpending
+  0.03    0.000065          65         1 __ctype_b_loc
+  0.03    0.000064          64         1 __strtoul_internal
+  0.03    0.000063          63         1 getopt_long
+  0.03    0.000062          62         1 getpagesize
+  0.03    0.000062          62         1 __cxa_atexit
+  0.03    0.000060          60         1 sigemptyset
+  0.03    0.000060          60         1 fclose
+  0.03    0.000059          59         1 strrchr
+  0.03    0.000050          50         1 __sprintf_chk
+  0.02    0.000047          47         1 fflush
+  0.02    0.000047          47         1 fileno
+  0.02    0.000046          46         1 memmove
+------ ----------- ----------- --------- --------------------
+100.00    0.197747                  3063 total
+ai@ai-OptiPlex-790:~/Documents/test$ 
+
+注:
+使用-c选项,ltrace输出由进程创建的库调用, 输出结果以调用过程的时间为准进行排序,
+因为是从urandom设备上读,这是一种产生随机数的设备,完成后,写入null设备.
+所以读过程花费了较多的时间.
+
+使用ltrace去捕获运行时函数,就好像在进程上系上了一个调试工具,它占据了ltrace大量的时间,这里ltrace一共消耗了5.8秒
+
+----------------------------------------
+再来看一下strace所花费的时间,如下:
+----------------------------------------
+ai@ai-OptiPlex-790:~/Documents/test$ strace -c dd if=/dev/urandom of=/dev/null count=1000
+1000+0 records in
+1000+0 records out
+512000 bytes (512 kB, 500 KiB) copied, 0.0467163 s, 11.0 MB/s
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 63.85    0.003801           4      1003           read
+ 34.25    0.002039           2      1003           write
+  1.26    0.000075           5        14        11 open
+  0.35    0.000021           2        10           close
+  0.17    0.000010           1         7           mmap
+  0.12    0.000007           1         5           fstat
+  0.00    0.000000           0         1           lseek
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         3           brk
+  0.00    0.000000           0         3           rt_sigaction
+  0.00    0.000000           0         3         3 access
+  0.00    0.000000           0         2           dup2
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+  0.00    0.000000           0         4           openat
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.005953                  2065        14 total
+ai@ai-OptiPlex-790:~/Documents/test$ 
+
+
+注:
+strace一共消耗了0.005953秒,strace把性能提升了几十倍,这主要是
+strace在跟踪系统调用的时候不需要动态库,而
+ltrace是根据动态库来分析程序运行的.
+
+所以ltrace也只能跟踪动态库,不能跟踪静态库.
+
+
+
+事实上用ltrace和strace都可以发现程序在哪个系统调用时发生了性能瓶径.
+
+ltrace用-T,而strace也用-T.
+
+----------------------------------
+三)ltrace与strace的相同点
+----------------------------------
+ltrace与strace都可以指定PID,即对运行中的程序进行跟踪.
+ltrace -p PID与strace -p PID
+
+ltrace与strace都可以跟踪程序fork或clone子进程.
+ltrace是用-f参数,而strace是用-f(fork/clone)和-F(vfork).
 
 
 
