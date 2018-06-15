@@ -1,1 +1,13 @@
-readme.
+1.apt-get install ctags
+2.sudo cp *.vim to vim install path
+3.sudo .vimrc to ~/.vimrc
+4.ctags -R 某目录
+
+Trinity中的使用介绍:
+    F8打开/关闭所有的功能框，
+    F9打开/关闭SourceExplorer功能框，剩下的都是相关的键控制相关的功能框。可以自己定义。
+    F10另一个功能就是更新ctags的内容，如果更改了代码保存后按下F10更新ctags。
+
+.vimrc里如果再加上 set mouse=a 就可以在vim下使用鼠标。
+
+先在你的工程目录下执行ctags -R, 然后用vim打开一个文件，按下F8/F9/F10...
