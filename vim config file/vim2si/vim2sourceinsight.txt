@@ -1,5 +1,6 @@
 1.apt-get install ctags
-2.sudo cp *.vim to vim install path
+2.sudo cp *.vim to vim install path   (/usr/share/vim/vim80/)
+
 3.sudo .vimrc to ~/.vimrc
 4.ctags -R 某目录
 
