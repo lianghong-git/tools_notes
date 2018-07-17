@@ -1,9 +1,3 @@
-/* YourDuino.com Example Software Sketch
-   Small Stepper Motor and Driver V1.5 06/21/2017
-  http://www.yourduino.com/sunshop/index.php?l=product_detail&p=126
-   Steps one revolution of output shaft, then back
-   terry@yourduino.com */
-
 /*-----( Import needed libraries )-----*/
 #include <Stepper.h>
 
