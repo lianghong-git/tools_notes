@@ -65,6 +65,3 @@ void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
   delay(10000);
 
 }/* --(end main loop )-- */
-
-/* ( THE END ) */
-
